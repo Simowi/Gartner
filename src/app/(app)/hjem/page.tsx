@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { Droplets, Leaf, Sun } from 'lucide-react'
+import PushVarsler from '@/components/PushVarsler'
 
 interface Plante {
   id: string
@@ -36,7 +37,7 @@ export default function HjemPage() {
     if (diff < 0) return 'Forfalt!'
     if (diff === 0) return 'I dag'
     if (diff === 1) return 'I morgen'
-    return `Om ${diff} dager`
+    return 'Om ' + diff + ' dager'
   }
 
   const tips = [
@@ -51,119 +52,53 @@ export default function HjemPage() {
 
   return (
     <div style={{ paddingTop: '52px', paddingBottom: '32px' }}>
-
-      {/* Header */}
-      <div style={{ marginBottom: '36px' }}>
-        <p style={{
-          fontFamily: 'Inter, sans-serif',
-          fontSize: '11px',
-          fontWeight: 600,
-          letterSpacing: '0.12em',
-          color: '#4a7c59',
-          marginBottom: '6px',
-          textTransform: 'uppercase',
-        }}>
+      <div style={{ marginBottom: '32px' }}>
+        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', color: '#4a7c59', marginBottom: '6px', textTransform: 'uppercase' }}>
           God dag
         </p>
-        <h1 style={{
-          fontFamily: 'Manrope, sans-serif',
-          fontSize: '42px',
-          fontWeight: 800,
-          color: '#1c1c18',
-          letterSpacing: '-0.03em',
-          lineHeight: 1.1,
-        }}>
+        <h1 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '42px', fontWeight: 800, color: '#1c1c18', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
           Din hage
         </h1>
       </div>
 
-      {/* Dagens tips kort */}
-      <div style={{
-        borderRadius: '20px',
-        padding: '20px',
-        marginBottom: '32px',
-        background: 'linear-gradient(135deg, #154212 0%, #2d5a27 100%)',
-      }}>
+      <PushVarsler />
+
+      <div style={{ borderRadius: '20px', padding: '20px', marginBottom: '32px', background: 'linear-gradient(135deg, #154212 0%, #2d5a27 100%)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
           <Sun size={13} color="rgba(255,255,255,0.6)" />
-          <p style={{
-            fontFamily: 'Inter, sans-serif',
-            fontSize: '10px',
-            fontWeight: 700,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.6)',
-          }}>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>
             Dagens tips
           </p>
         </div>
-        <p style={{
-          fontFamily: 'Inter, sans-serif',
-          fontSize: '14px',
-          lineHeight: 1.6,
-          color: 'rgba(255,255,255,0.92)',
-        }}>
+        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', lineHeight: 1.6, color: 'rgba(255,255,255,0.92)' }}>
           {dagensTips}
         </p>
       </div>
 
-      {/* Vanning snart */}
       <div>
-        <h2 style={{
-          fontFamily: 'Manrope, sans-serif',
-          fontSize: '22px',
-          fontWeight: 700,
-          color: '#1c1c18',
-          marginBottom: '16px',
-          letterSpacing: '-0.01em',
-        }}>
+        <h2 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '22px', fontWeight: 700, color: '#1c1c18', marginBottom: '16px', letterSpacing: '-0.01em' }}>
           Trenger vann snart
         </h2>
 
         {planter.length === 0 ? (
-          <div style={{
-            borderRadius: '20px',
-            padding: '40px 24px',
-            textAlign: 'center',
-            backgroundColor: '#f0ece3',
-          }}>
+          <div style={{ borderRadius: '20px', padding: '40px 24px', textAlign: 'center', backgroundColor: '#f0ece3' }}>
             <Leaf size={32} color="#c4c0b7" style={{ margin: '0 auto 12px' }} />
-            <p style={{
-              fontFamily: 'Inter, sans-serif',
-              fontSize: '14px',
-              color: '#4a4a42',
-            }}>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42' }}>
               Du har ingen planter ennå.{' '}
-              <a href="/planter/ny" style={{ color: '#154212', fontWeight: 600 }}>
-                Legg til din første!
-              </a>
+              <a href="/planter/ny" style={{ color: '#154212', fontWeight: 600 }}>Legg til din første!</a>
             </p>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {planter.map((plante) => (
-              <div
-                key={plante.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  borderRadius: '16px',
-                  padding: '16px',
-                  backgroundColor: '#f0ece3',
-                }}
-              >
+              <a key={plante.id} href={'/planter/' + plante.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '16px', padding: '16px', backgroundColor: '#f0ece3', textDecoration: 'none' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <div style={{
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '14px',
-                    backgroundColor: '#d4e8d0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                    <Leaf size={20} color="#154212" />
+                  <div style={{ width: '48px', height: '48px', borderRadius: '14px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
+                    {plante.bilde_url ? (
+                      <img src={plante.bilde_url} alt={plante.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <Leaf size={20} color="#154212" />
+                    )}
                   </div>
                   <div>
                     <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '15px', fontWeight: 600, color: '#1c1c18' }}>
@@ -180,7 +115,7 @@ export default function HjemPage() {
                     {dagTilVanning(plante.neste_vanning) ?? '–'}
                   </span>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         )}

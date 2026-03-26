@@ -1,0 +1,24 @@
+{
+  "name": "Gartner",
+  "short_name": "Gartner",
+  "description": "Ditt personlige plantedashboard",
+  "start_url": "/hjem",
+  "display": "standalone",
+  "background_color": "#fcf9f2",
+  "theme_color": "#154212",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
