@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
-import { Droplets, Leaf, Sun, Sparkles } from 'lucide-react'
+import { Droplets, Leaf, Sun, Sparkles, LogOut } from 'lucide-react'
 import PushVarsler from '@/components/PushVarsler'
 
 interface Plante {
@@ -85,6 +85,11 @@ export default function HjemPage() {
   const [hilsen, setHilsen] = useState('')
   const supabase = createClient()
 
+  async function loggUt() {
+    await supabase.auth.signOut()
+    window.location.href = '/logg-inn'
+  }
+
   useEffect(() => {
     async function hentData() {
       const { data: { user } } = await supabase.auth.getUser()
@@ -116,13 +121,21 @@ export default function HjemPage() {
 
   return (
     <div style={{ paddingTop: '52px', paddingBottom: '32px' }}>
-      <div style={{ marginBottom: '32px' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '32px' }}>
+        <div>
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', color: '#4a7c59', marginBottom: '6px', textTransform: 'uppercase' }}>
           {hilsen}
         </p>
-        <h1 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '42px', fontWeight: 800, color: '#1c1c18', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
-          Plantene dine
-        </h1>
+          <h1 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '42px', fontWeight: 800, color: '#1c1c18', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+            Plantene dine
+          </h1>
+        </div>
+        <button
+          onClick={loggUt}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', border: 'none', backgroundColor: '#f0ece3', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#4a4a42', marginTop: '8px', flexShrink: 0 }}
+        >
+          <LogOut size={14} color="#4a4a42" /> Logg ut
+        </button>
       </div>
 
       <PushVarsler />
