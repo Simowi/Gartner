@@ -4,7 +4,8 @@ import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Leaf, Search, X, AlertTriangle } from 'lucide-react'
 import BildeOpplaster from '@/components/BildeOpplaster'
-import { søkPlanteArt, type PlanteArt } from '@/lib/plantedatabase'
+import { søkPlanteArt, planteArtDatabase, type PlanteArt } from '@/lib/plantedatabase'
+import ScanPlante from '@/components/ScanPlante'
 
 export default function NyPlantePage() {
   const [navn, setNavn] = useState('')
@@ -139,7 +140,20 @@ export default function NyPlantePage() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-        {/* Artssøk */}
+        {/* Scan-knapp */}
+        <ScanPlante onArtValgt={(artId, latinsk, norsk, intervall) => {
+          const funnetArt = planteArtDatabase.find(a => a.id === artId)
+          if (funnetArt) {
+            setValgtArt(funnetArt)
+            setArtSøk(funnetArt.norskNavn)
+          } else {
+            setArtSøk(norsk)
+          }
+          if (!navn) setNavn(norsk)
+          setVanningIntervall(String(intervall))
+        }} />
+
+      {/* Artssøk */}
         <div ref={søkRef}>
           <label style={labelStil}>Art / plantetype</label>
           <div style={{ position: 'relative' }}>
