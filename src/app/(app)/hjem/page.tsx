@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { Droplets, Leaf, Sun, Sparkles } from 'lucide-react'
 import PushVarsler from '@/components/PushVarsler'
+import VærStripe from '@/components/VærStripe'
 
 interface Plante {
   id: string
@@ -10,6 +11,12 @@ interface Plante {
   art: string
   neste_vanning: string
   bilde_url: string
+  vanning_intervall_dager: number
+}
+
+interface TipsKort {
+  type: 'tips' | 'fakta'
+  tekst: string
 }
 
 function hentNavn(epost: string): string {
@@ -27,7 +34,7 @@ function hentHilsen(navn: string): string {
   return 'God natt, ' + navn + '!'
 }
 
-const tips: { type: 'tips' | 'fakta'; tekst: string }[] = [
+const tips: TipsKort[] = [
   { type: 'tips', tekst: 'Stikk fingeren 2–3 cm ned i jorda før du vanner – er det fremdeles fuktig, kan du vente litt til.' },
   { type: 'tips', tekst: 'Tørk støv av bladene jevnlig med en fuktig klut. Støvete blader fotosyntiserer dårligere.' },
   { type: 'tips', tekst: 'La kranvann stå i en time før vanning – da fordamper klor og kalken synker til bunns.' },
@@ -85,9 +92,12 @@ export default function HjemPage() {
   const [hilsen, setHilsen] = useState('')
   const [profilBilde, setProfilBilde] = useState('')
   const [profilInitial, setProfilInitial] = useState('')
+  const [dagensKort, setDagensKort] = useState<TipsKort | null>(null)
   const supabase = createClient()
 
-
+  useEffect(() => {
+    setDagensKort(tips[Math.floor(Math.random() * tips.length)])
+  }, [])
 
   useEffect(() => {
     async function hentData() {
@@ -104,6 +114,7 @@ export default function HjemPage() {
         .single()
       if (profil?.bilde_url) setProfilBilde(profil.bilde_url)
       if (profil?.navn) setProfilInitial(profil.navn[0].toUpperCase())
+
       const { data } = await supabase
         .from('planter')
         .select('*')
@@ -124,16 +135,13 @@ export default function HjemPage() {
     return 'Om ' + diff + ' dager'
   }
 
-  const dagensKort = tips[new Date().getDate() % tips.length]
-  const erFakta = dagensKort.type === 'fakta'
-
   return (
     <div style={{ paddingTop: '52px', paddingBottom: '32px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '32px' }}>
         <div>
-        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', color: '#4a7c59', marginBottom: '6px', textTransform: 'uppercase' }}>
-          {hilsen}
-        </p>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', color: '#4a7c59', marginBottom: '6px', textTransform: 'uppercase' }}>
+            {hilsen}
+          </p>
           <h1 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '42px', fontWeight: 800, color: '#1c1c18', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
             Plantene dine
           </h1>
@@ -154,21 +162,23 @@ export default function HjemPage() {
 
       <PushVarsler />
 
-      <div style={{ borderRadius: '20px', padding: '20px', marginBottom: '32px', background: 'linear-gradient(135deg, #154212 0%, #2d5a27 100%)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-          {erFakta ? (
-            <Sparkles size={13} color="rgba(255,255,255,0.6)" />
-          ) : (
-            <Sun size={13} color="rgba(255,255,255,0.6)" />
-          )}
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>
-            {erFakta ? 'Visste du at' : 'Dagens tips'}
+      {dagensKort && (
+        <div style={{ borderRadius: '20px', padding: '20px', marginBottom: '32px', background: 'linear-gradient(135deg, #154212 0%, #2d5a27 100%)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+            {dagensKort.type === 'fakta' ? (
+              <Sparkles size={13} color="rgba(255,255,255,0.6)" />
+            ) : (
+              <Sun size={13} color="rgba(255,255,255,0.6)" />
+            )}
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>
+              {dagensKort.type === 'fakta' ? 'Visste du at' : 'Dagens tips'}
+            </p>
+          </div>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', lineHeight: 1.6, color: 'rgba(255,255,255,0.92)' }}>
+            {dagensKort.tekst}
           </p>
         </div>
-        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', lineHeight: 1.6, color: 'rgba(255,255,255,0.92)' }}>
-          {dagensKort.tekst}
-        </p>
-      </div>
+      )}
 
       <div>
         <h2 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '22px', fontWeight: 700, color: '#1c1c18', marginBottom: '16px', letterSpacing: '-0.01em' }}>
@@ -214,6 +224,8 @@ export default function HjemPage() {
             ))}
           </div>
         )}
+
+        <VærStripe />
       </div>
     </div>
   )

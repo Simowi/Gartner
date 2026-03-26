@@ -25,7 +25,7 @@ export default function PlanterPage() {
         .from('planter')
         .select('*')
         .eq('bruker_id', user.id)
-        .order('opprettet_at', { ascending: false })
+        .order('plassering', { ascending: true })
       if (data) setPlanter(data)
       setLaster(false)
     }
@@ -39,6 +39,20 @@ export default function PlanterPage() {
     if (diff === 0) return 'I dag'
     if (diff === 1) return 'I morgen'
     return 'Om ' + diff + ' dager'
+  }
+
+  const grupperPerRom = (planter: Plante[]) => {
+    const grupper: Record<string, Plante[]> = {}
+    for (const plante of planter) {
+      const rom = plante.plassering || 'Uten plassering'
+      if (!grupper[rom]) grupper[rom] = []
+      grupper[rom].push(plante)
+    }
+    return Object.entries(grupper).sort(([a], [b]) => {
+      if (a === 'Uten plassering') return 1
+      if (b === 'Uten plassering') return -1
+      return a.localeCompare(b, 'nb')
+    })
   }
 
   return (
@@ -75,35 +89,56 @@ export default function PlanterPage() {
           </a>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {planter.map((plante) => (
-            <a key={plante.id} href={'/planter/' + plante.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '20px', padding: '16px', backgroundColor: '#f0ece3', textDecoration: 'none' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <div style={{ width: '56px', height: '56px', borderRadius: '16px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
-                  {plante.bilde_url ? (
-                    <img src={plante.bilde_url} alt={plante.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <Leaf size={22} color="#154212" />
-                  )}
-                </div>
-                <div>
-                  <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 700, color: '#1c1c18', marginBottom: '2px' }}>
-                    {plante.navn}
-                  </p>
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#4a4a42' }}>
-                    {plante.art || 'Ukjent art'}{plante.plassering ? ' · ' + plante.plassering : ''}
-                  </p>
-                </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+          {grupperPerRom(planter).map(([rom, romPlanter]) => (
+            <div key={rom}>
+
+              {/* Seksjonsoverskrift */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#4a7c59', flexShrink: 0 }}>
+                  {rom}
+                </p>
+                <div style={{ flex: 1, height: '1px', backgroundColor: '#e8e4db' }} />
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#c4c0b7', flexShrink: 0 }}>
+                  {romPlanter.length} {romPlanter.length === 1 ? 'plante' : 'planter'}
+                </p>
               </div>
-              {plante.neste_vanning && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
-                  <Droplets size={13} color="#4a7c59" />
-                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 500, color: '#4a7c59' }}>
-                    {dagTilVanning(plante.neste_vanning)}
-                  </span>
-                </div>
-              )}
-            </a>
+
+              {/* Plantekort */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {romPlanter.map((plante) => (
+                  <a key={plante.id} href={'/planter/' + plante.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '16px', padding: '14px', backgroundColor: '#f0ece3', textDecoration: 'none' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ width: '52px', height: '52px', borderRadius: '14px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
+                        {plante.bilde_url ? (
+                          <img src={plante.bilde_url} alt={plante.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          <Leaf size={20} color="#154212" />
+                        )}
+                      </div>
+                      <div>
+                        <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '15px', fontWeight: 700, color: '#1c1c18', marginBottom: '2px' }}>
+                          {plante.navn}
+                        </p>
+                        {plante.art && (
+                          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#4a4a42', fontStyle: 'italic' }}>
+                            {plante.art}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    {plante.neste_vanning && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
+                        <Droplets size={13} color="#4a7c59" />
+                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 500, color: '#4a7c59' }}>
+                          {dagTilVanning(plante.neste_vanning)}
+                        </span>
+                      </div>
+                    )}
+                  </a>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       )}
