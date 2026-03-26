@@ -52,25 +52,13 @@ export default function PlanteProfil() {
     const nå = new Date()
     const nestVanning = new Date()
     nestVanning.setDate(nestVanning.getDate() + plante.vanning_intervall_dager)
-
-    const { error } = await supabase
-      .from('planter')
-      .update({
-        sist_vannet: nå.toISOString(),
-        neste_vanning: nestVanning.toISOString(),
-      })
-      .eq('id', plante.id)
-
+    const { error } = await supabase.from('planter').update({
+      sist_vannet: nå.toISOString(),
+      neste_vanning: nestVanning.toISOString(),
+    }).eq('id', plante.id)
     if (!error) {
-      await supabase.from('vanningslogg').insert({
-        plante_id: plante.id,
-        vannet_at: nå.toISOString(),
-      })
-      setPlante({
-        ...plante,
-        sist_vannet: nå.toISOString(),
-        neste_vanning: nestVanning.toISOString(),
-      })
+      await supabase.from('vanningslogg').insert({ plante_id: plante.id, vannet_at: nå.toISOString() })
+      setPlante({ ...plante, sist_vannet: nå.toISOString(), neste_vanning: nestVanning.toISOString() })
       visToast('Vanning registrert! 💧')
     } else {
       visToast('Noe gikk galt, prøv igjen.')
@@ -107,67 +95,48 @@ export default function PlanteProfil() {
     return '#4a7c59'
   }
 
-  if (laster) {
-    return (
-      <div style={{ paddingTop: '52px', textAlign: 'center' }}>
-        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42' }}>Laster...</p>
-      </div>
-    )
-  }
+  if (laster) return (
+    <div style={{ paddingTop: '52px', textAlign: 'center' }}>
+      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42' }}>Laster...</p>
+    </div>
+  )
 
-  if (!plante) {
-    return (
-      <div style={{ paddingTop: '52px', textAlign: 'center' }}>
-        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42' }}>Planten ble ikke funnet.</p>
-      </div>
-    )
-  }
+  if (!plante) return (
+    <div style={{ paddingTop: '52px', textAlign: 'center' }}>
+      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42' }}>Planten ble ikke funnet.</p>
+    </div>
+  )
 
   return (
     <div style={{ paddingTop: '52px', paddingBottom: '32px' }}>
 
       {/* Toast */}
       {toast && (
-        <div style={{
-          position: 'fixed',
-          top: '24px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 100,
-          backgroundColor: '#154212',
-          color: 'white',
-          padding: '12px 20px',
-          borderRadius: '999px',
-          fontFamily: 'Inter, sans-serif',
-          fontSize: '14px',
-          fontWeight: 500,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          boxShadow: '0 8px 32px rgba(21, 66, 18, 0.3)',
-          whiteSpace: 'nowrap',
-        }}>
+        <div style={{ position: 'fixed', top: '24px', left: '50%', transform: 'translateX(-50%)', zIndex: 100, backgroundColor: '#154212', color: 'white', padding: '12px 20px', borderRadius: '999px', fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 8px 32px rgba(21, 66, 18, 0.3)', whiteSpace: 'nowrap' }}>
           <CheckCircle size={16} color="white" />
           {toast}
         </div>
       )}
 
-      <button
-        onClick={() => router.back()}
-        style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', padding: '0', marginBottom: '24px', fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42' }}
-      >
-        <ArrowLeft size={16} />
-        Tilbake
+      {/* Tilbake-knapp */}
+      <button onClick={() => router.back()} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', padding: '0', marginBottom: '20px', fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42' }}>
+        <ArrowLeft size={16} /> Tilbake
       </button>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '32px' }}>
-        <div style={{ width: '88px', height: '88px', borderRadius: '24px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
-          {plante.bilde_url ? (
-            <img src={plante.bilde_url} alt={plante.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : (
-            <Leaf size={36} color="#154212" />
-          )}
+      {/* Hero-bilde */}
+      {plante.bilde_url && (
+        <div style={{ width: '100%', height: '240px', borderRadius: '20px', overflow: 'hidden', marginBottom: '24px' }}>
+          <img src={plante.bilde_url} alt={plante.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
+      )}
+
+      {/* Navn og art */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '28px' }}>
+        {!plante.bilde_url && (
+          <div style={{ width: '72px', height: '72px', borderRadius: '20px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Leaf size={30} color="#154212" />
+          </div>
+        )}
         <div>
           <h1 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '32px', fontWeight: 800, color: '#1c1c18', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '4px' }}>
             {plante.navn}
@@ -180,23 +149,19 @@ export default function PlanteProfil() {
         </div>
       </div>
 
-      <button
-        onClick={registrerVanning}
-        disabled={vannerNå}
-        style={{ width: '100%', padding: '18px', borderRadius: '16px', border: 'none', background: 'linear-gradient(135deg, #154212 0%, #2d5a27 100%)', color: 'white', fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 700, cursor: vannerNå ? 'not-allowed' : 'pointer', opacity: vannerNå ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '24px' }}
-      >
+      {/* Vann nå-knapp */}
+      <button onClick={registrerVanning} disabled={vannerNå} style={{ width: '100%', padding: '18px', borderRadius: '16px', border: 'none', background: 'linear-gradient(135deg, #154212 0%, #2d5a27 100%)', color: 'white', fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 700, cursor: vannerNå ? 'not-allowed' : 'pointer', opacity: vannerNå ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '24px' }}>
         <Droplets size={18} color="white" />
         {vannerNå ? 'Registrerer...' : 'Registrer vanning nå'}
       </button>
 
+      {/* Info-kort */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
 
         <div style={{ borderRadius: '16px', padding: '16px', backgroundColor: '#f0ece3' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
             <Droplets size={15} color={vanningFarge(plante.neste_vanning)} />
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#4a4a42' }}>
-              Neste vanning
-            </p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#4a4a42' }}>Neste vanning</p>
           </div>
           <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '18px', fontWeight: 700, color: vanningFarge(plante.neste_vanning) }}>
             {dagTilVanning(plante.neste_vanning)}
@@ -209,9 +174,7 @@ export default function PlanteProfil() {
         <div style={{ borderRadius: '16px', padding: '16px', backgroundColor: '#f0ece3' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
             <Calendar size={15} color="#4a4a42" />
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#4a4a42' }}>
-              Sist vannet
-            </p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#4a4a42' }}>Sist vannet</p>
           </div>
           <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '18px', fontWeight: 700, color: '#1c1c18' }}>
             {formaterDato(plante.sist_vannet)}
@@ -222,9 +185,7 @@ export default function PlanteProfil() {
           <div style={{ borderRadius: '16px', padding: '16px', backgroundColor: '#f0ece3' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
               <MapPin size={15} color="#4a4a42" />
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#4a4a42' }}>
-                Plassering
-              </p>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#4a4a42' }}>Plassering</p>
             </div>
             <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '18px', fontWeight: 700, color: '#1c1c18' }}>
               {plante.plassering}
@@ -236,9 +197,7 @@ export default function PlanteProfil() {
           <div style={{ borderRadius: '16px', padding: '16px', backgroundColor: '#f0ece3' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
               <FileText size={15} color="#4a4a42" />
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#4a4a42' }}>
-                Notater
-              </p>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#4a4a42' }}>Notater</p>
             </div>
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#1c1c18', lineHeight: 1.6 }}>
               {plante.notater}
@@ -247,13 +206,10 @@ export default function PlanteProfil() {
         )}
       </div>
 
+      {/* Slett */}
       {!bekreftSlett ? (
-        <button
-          onClick={() => setBekreftSlett(true)}
-          style={{ width: '100%', padding: '14px', borderRadius: '14px', border: 'none', backgroundColor: '#fdf0ef', color: '#c0392b', fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-        >
-          <Trash2 size={15} />
-          Slett plante
+        <button onClick={() => setBekreftSlett(true)} style={{ width: '100%', padding: '14px', borderRadius: '14px', border: 'none', backgroundColor: '#fdf0ef', color: '#c0392b', fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+          <Trash2 size={15} /> Slett plante
         </button>
       ) : (
         <div style={{ borderRadius: '16px', padding: '16px', backgroundColor: '#fdf0ef' }}>
@@ -261,17 +217,10 @@ export default function PlanteProfil() {
             Er du sikker på at du vil slette <strong>{plante.navn}</strong>?
           </p>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button
-              onClick={() => setBekreftSlett(false)}
-              style={{ flex: 1, padding: '12px', borderRadius: '12px', border: 'none', backgroundColor: '#f0ece3', color: '#1c1c18', fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
-            >
+            <button onClick={() => setBekreftSlett(false)} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: 'none', backgroundColor: '#f0ece3', color: '#1c1c18', fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
               Avbryt
             </button>
-            <button
-              onClick={slettPlante}
-              disabled={sletterNå}
-              style={{ flex: 1, padding: '12px', borderRadius: '12px', border: 'none', backgroundColor: '#c0392b', color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
-            >
+            <button onClick={slettPlante} disabled={sletterNå} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: 'none', backgroundColor: '#c0392b', color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
               {sletterNå ? 'Sletter...' : 'Ja, slett'}
             </button>
           </div>
