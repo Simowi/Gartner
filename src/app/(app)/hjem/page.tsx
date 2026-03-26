@@ -5,6 +5,9 @@ import { Droplets, Leaf, Sun, Sparkles } from 'lucide-react'
 import PushVarsler from '@/components/PushVarsler'
 import VærStripe from '@/components/VærStripe'
 import HjemStatistikk from '@/components/HjemStatistikk'
+import Sesongkort from '@/components/Sesongkort'
+import Plantegalleri from '@/components/Plantegalleri'
+import DeltAktivitet from '@/components/DeltAktivitet'
 
 interface Plante {
   id: string
@@ -227,12 +230,15 @@ export default function HjemPage() {
         )}
 
         <div style={{ marginTop: '32px' }}>
+          <Sesongkort />
           <h2 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '22px', fontWeight: 700, color: '#1c1c18', marginBottom: '16px', letterSpacing: '-0.01em' }}>
             Din hage
           </h2>
           <HjemStatistikk />
         </div>
 
+        <Plantegalleri />
+        <DeltAktivitet />
         <VærStripe />
       </div>
     </div>
