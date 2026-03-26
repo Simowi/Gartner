@@ -1,12 +1,16 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Bell, BellOff } from 'lucide-react'
+import { Bell, BellOff, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 
 export default function PushVarsler() {
   const [støttet, setStøttet] = useState(false)
   const [tillatelse, setTillatelse] = useState<NotificationPermission>('default')
   const [laster, setLaster] = useState(false)
+  const [skjult, setSkjult] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return localStorage.getItem('push-varsler-skjult') === 'true'
+  })
   const supabase = createClient()
 
   useEffect(() => {
@@ -66,7 +70,7 @@ export default function PushVarsler() {
     })
   }
 
-  if (!støttet) return null
+  if (!støttet || skjult) return null
 
   return (
     <div style={{
@@ -93,6 +97,12 @@ export default function PushVarsler() {
           </p>
         </div>
       </div>
+      {tillatelse === 'granted' && (
+        <button onClick={() => { setSkjult(true); localStorage.setItem('push-varsler-skjult', 'true') }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', flexShrink: 0 }}>
+          <X size={16} color="#4a4a42" />
+        </button>
+      )}
+
       {tillatelse !== 'granted' && (
         <button
           onClick={aktiverVarsler}
