@@ -34,10 +34,17 @@ export default function NyPlantePage() {
 
   function håndterArtSøk(verdi: string) {
     setArtSøk(verdi)
-    if (valgtArt) setValgtArt(null)
-    const resultater = søkPlanteArt(verdi)
-    setArtForslag(resultater)
-    setVisForslag(resultater.length > 0)
+    if (valgtArt) {
+      setValgtArt(null)
+    }
+    if (verdi.length >= 2) {
+      const resultater = søkPlanteArt(verdi)
+      setArtForslag(resultater)
+      setVisForslag(true)
+    } else {
+      setArtForslag([])
+      setVisForslag(false)
+    }
   }
 
   function velgArt(art: PlanteArt) {

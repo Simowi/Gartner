@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeft, Droplets, Leaf, Trash2, MapPin, Calendar, FileText, CheckCircle, Sun, Sprout, AlertTriangle, BookOpen } from 'lucide-react'
+import { ArrowLeft, Droplets, Leaf, Trash2, MapPin, Calendar, FileText, CheckCircle, Sun, Sprout, AlertTriangle, BookOpen, Pencil } from 'lucide-react'
 import { planteArtDatabase, type PlanteArt } from '@/lib/plantedatabase'
 
 interface Plante {
@@ -126,10 +126,15 @@ export default function PlanteProfil() {
         </div>
       )}
 
-      {/* Tilbake-knapp */}
-      <button onClick={() => router.back()} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', padding: '0', marginBottom: '20px', fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42' }}>
-        <ArrowLeft size={16} /> Tilbake
-      </button>
+      {/* Tilbake-knapp og rediger */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+        <button onClick={() => router.back()} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', padding: '0', fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42' }}>
+          <ArrowLeft size={16} /> Tilbake
+        </button>
+        <button onClick={() => router.push('/planter/' + params.id + '/rediger')} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', border: 'none', backgroundColor: '#f0ece3', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#1c1c18' }}>
+          <Pencil size={14} color="#1c1c18" /> Rediger
+        </button>
+      </div>
 
       {/* Hero-bilde */}
       {plante.bilde_url && (
