@@ -1,26 +1,41 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary: #154212;
+  --primary-container: #2d5a27;
+  --secondary: #4a7c59;
+  --secondary-container: #d4e8d0;
+  --tertiary: #7c6a2d;
+  --tertiary-container: #f0e0a0;
+  --background: #fcf9f2;
+  --surface: #f7f4ed;
+  --surface-low: #f0ece3;
+  --surface-container: #e8e4db;
+  --surface-lowest: #fdfaf3;
+  --on-surface: #1c1c18;
+  --on-surface-variant: #4a4a42;
+  --on-primary: #ffffff;
+  --outline-variant: #c4c0b7;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+  color: var(--on-surface);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Manrope', sans-serif;
 }
