@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Leaf, Search, X, AlertTriangle } from 'lucide-react'
+import BildeOpplaster from '@/components/BildeOpplaster'
 import { søkPlanteArt, type PlanteArt } from '@/lib/plantedatabase'
 
 export default function NyPlantePage() {
@@ -14,6 +15,7 @@ export default function NyPlantePage() {
   const [plassering, setPlassering] = useState('')
   const [vanningIntervall, setVanningIntervall] = useState('7')
   const [notater, setNotater] = useState('')
+  const [bildeUrl, setBildeUrl] = useState('')
   const [laster, setLaster] = useState(false)
   const [feil, setFeil] = useState('')
   const søkRef = useRef<HTMLDivElement>(null)
@@ -73,6 +75,7 @@ export default function NyPlantePage() {
         neste_vanning: nestVanning.toISOString(),
         notater: notater.trim(),
         art_id: valgtArt?.id || null,
+        bilde_url: bildeUrl || null,
       })
       if (error) { setFeil('Feil: ' + error.message); setLaster(false) }
       else { router.push('/planter'); router.refresh() }
@@ -204,7 +207,13 @@ export default function NyPlantePage() {
           )}
         </div>
 
-        {/* Navn */}
+        {/* Bilde */}
+        <div>
+          <label style={labelStil}>Bilde</label>
+          <BildeOpplaster onBildeLastetOpp={(url) => setBildeUrl(url)} />
+        </div>
+
+      {/* Navn */}
         <div>
           <label style={labelStil}>Kallenavn / navn *</label>
           <input type="text" value={navn} onChange={(e) => setNavn(e.target.value)} placeholder="f.eks. Monstera, Fredriksen..." style={inputStil} />
