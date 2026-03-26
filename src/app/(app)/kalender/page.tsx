@@ -100,7 +100,8 @@ export default function KalenderPage() {
 
     if (d.getTime() === iDag.getTime()) return 'I dag'
     if (d.getTime() === iMorgen.getTime()) return 'I morgen'
-    return ukedager[dato.getDay()] + ' ' + dato.getDate() + '. ' + måneder[dato.getMonth()]
+    const dagNavn = ukedager[dato.getDay()].charAt(0).toUpperCase() + ukedager[dato.getDay()].slice(1)
+    return dagNavn + ' ' + dato.getDate() + '. ' + måneder[dato.getMonth()]
   }
 
   const erForsinket = (dato: Date) => {
@@ -254,7 +255,9 @@ export default function KalenderPage() {
                             </div>
                           </div>
 
-                          {erIDag && !erVannet ? (
+                          {erVannet ? (
+                            <CheckCircle size={18} color="#4a7c59" />
+                          ) : (erIDag || forsinket) ? (
                             <button
                               onClick={() => registrerVanning(plante)}
                               style={{
@@ -264,7 +267,7 @@ export default function KalenderPage() {
                                 padding: '7px 12px',
                                 borderRadius: '10px',
                                 border: 'none',
-                                backgroundColor: '#154212',
+                                backgroundColor: forsinket ? '#c0392b' : '#154212',
                                 color: 'white',
                                 fontFamily: 'Inter, sans-serif',
                                 fontSize: '12px',
@@ -276,10 +279,8 @@ export default function KalenderPage() {
                               <Droplets size={12} color="white" />
                               Vann
                             </button>
-                          ) : erVannet ? (
-                            <CheckCircle size={18} color="#4a7c59" />
                           ) : (
-                            <Droplets size={16} color={forsinket ? '#c0392b' : '#c4c0b7'} />
+                            <Droplets size={16} color="#c4c0b7" />
                           )}
                         </div>
                       )
