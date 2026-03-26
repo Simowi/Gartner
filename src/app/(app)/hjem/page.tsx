@@ -111,7 +111,9 @@ export default function HjemPage() {
     return 'Om ' + diff + ' dager'
   }
 
-  const dagensKort = tips[new Date().getDate() % tips.length]
+  const now = new Date()
+  const dagIndeks = now.getDate() * 2 + (now.getHours() >= 16.5 ? 1 : 0)
+  const dagensKort = tips[dagIndeks % tips.length]
   const erFakta = dagensKort.type === 'fakta'
 
   return (

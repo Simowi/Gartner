@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Leaf, Plus, MessageCircle } from 'lucide-react'
+import { Home, Leaf, Plus, CalendarDays } from 'lucide-react'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -10,7 +10,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { href: '/hjem', icon: Home, label: 'Hjem' },
     { href: '/planter', icon: Leaf, label: 'Planter' },
     { href: '/planter/ny', icon: Plus, label: 'Legg til' },
-    { href: '/chat', icon: MessageCircle, label: 'Spør AI' },
+    { href: '/kalender', icon: CalendarDays, label: 'Kalender' },
   ]
 
   return (
@@ -18,7 +18,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <main style={{ paddingBottom: '100px', maxWidth: '640px', margin: '0 auto', padding: '0 24px 100px 24px' }}>
         {children}
       </main>
-
       <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50, padding: '0 24px 24px 24px' }}>
         <div style={{
           maxWidth: '640px',
@@ -49,17 +48,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   transition: 'opacity 0.2s',
                 }}
               >
-                <Icon
-                  size={22}
-                  color={active ? '#154212' : '#1c1c18'}
-                  strokeWidth={active ? 2.2 : 1.8}
-                />
-                <span style={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '10px',
-                  fontWeight: 500,
-                  color: active ? '#154212' : '#1c1c18',
-                }}>
+                <Icon size={22} color={active ? '#154212' : '#1c1c18'} strokeWidth={active ? 2.2 : 1.8} />
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 500, color: active ? '#154212' : '#1c1c18' }}>
                   {label}
                 </span>
               </Link>
