@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeft, Droplets, Leaf, Trash2, MapPin, Calendar, FileText, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Droplets, Leaf, Trash2, MapPin, Calendar, FileText, CheckCircle, Sun, Sprout, AlertTriangle, BookOpen } from 'lucide-react'
+import { planteArtDatabase, type PlanteArt } from '@/lib/plantedatabase'
 
 interface Plante {
   id: string
@@ -24,6 +25,7 @@ export default function PlanteProfil() {
   const [sletterNå, setSletterNå] = useState(false)
   const [bekreftSlett, setBekreftSlett] = useState(false)
   const [toast, setToast] = useState('')
+  const [artInfo, setArtInfo] = useState<PlanteArt | null>(null)
   const router = useRouter()
   const params = useParams()
   const supabase = createClient()
@@ -35,7 +37,13 @@ export default function PlanteProfil() {
         .select('*')
         .eq('id', params.id)
         .single()
-      if (data) setPlante(data)
+      if (data) {
+        setPlante(data)
+        if (data.art_id) {
+          const funnetArt = planteArtDatabase.find(a => a.id === data.art_id)
+          if (funnetArt) setArtInfo(funnetArt)
+        }
+      }
       setLaster(false)
     }
     hentPlante()
@@ -205,6 +213,73 @@ export default function PlanteProfil() {
           </div>
         )}
       </div>
+
+      {/* Artsinformasjon */}
+      {artInfo && (
+        <div style={{ marginBottom: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+            <BookOpen size={15} color="#4a4a42" />
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#4a4a42' }}>Om arten</p>
+          </div>
+
+          <div style={{ borderRadius: '16px', padding: '16px', backgroundColor: '#f0ece3', marginBottom: '10px' }}>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#1c1c18', lineHeight: 1.6, marginBottom: '12px' }}>
+              {artInfo.beskrivelse}
+            </p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#4a4a42', fontStyle: 'italic' }}>
+              Familie: {artInfo.familie} · Opprinnelse: {artInfo.opprinnelse}
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '10px' }}>
+            {[
+              { label: 'Lys', verdi: artInfo.lysforhold === 'lite' ? 'Lite' : artInfo.lysforhold === 'middels' ? 'Middels' : 'Mye' },
+              { label: 'Luftfukt.', verdi: artInfo.luftfuktighet === 'lav' ? 'Lav' : artInfo.luftfuktighet === 'middels' ? 'Middels' : 'Høy' },
+              { label: 'Vanskelighet', verdi: artInfo.vanskelighetsgrad === 'lett' ? '🟢 Lett' : artInfo.vanskelighetsgrad === 'middels' ? '🟡 Middels' : '🔴 Krevende' },
+            ].map(({ label, verdi }) => (
+              <div key={label} style={{ backgroundColor: '#f0ece3', borderRadius: '12px', padding: '10px 12px' }}>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#4a4a42', marginBottom: '3px' }}>{label}</p>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 600, color: '#1c1c18' }}>{verdi}</p>
+              </div>
+            ))}
+          </div>
+
+          {(artInfo.giftig || artInfo.giftigForDyr) && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', backgroundColor: '#fdf0ef', borderRadius: '12px', marginBottom: '10px' }}>
+              <AlertTriangle size={15} color="#c0392b" />
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#c0392b', fontWeight: 500 }}>
+                {artInfo.giftig && artInfo.giftigForDyr ? 'Giftig for mennesker og dyr' : artInfo.giftigForDyr ? 'Giftig for kjæledyr' : 'Giftig for mennesker'}
+              </p>
+            </div>
+          )}
+
+          <div style={{ borderRadius: '16px', padding: '16px', backgroundColor: '#f0ece3', marginBottom: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+              <Sprout size={14} color="#154212" />
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#4a4a42' }}>Stelletips</p>
+            </div>
+            {artInfo.stell.map((tips, i) => (
+              <div key={i} style={{ display: 'flex', gap: '10px', marginBottom: i < artInfo.stell.length - 1 ? '8px' : '0' }}>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#154212', fontWeight: 700, flexShrink: 0 }}>·</span>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#1c1c18', lineHeight: 1.5 }}>{tips}</p>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ borderRadius: '16px', padding: '16px', backgroundColor: '#f0ece3' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+              <Sun size={14} color="#154212" />
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#4a4a42' }}>Visste du at</p>
+            </div>
+            {artInfo.fakta.map((fakt, i) => (
+              <div key={i} style={{ display: 'flex', gap: '10px', marginBottom: i < artInfo.fakta.length - 1 ? '8px' : '0' }}>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#154212', fontWeight: 700, flexShrink: 0 }}>·</span>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#1c1c18', lineHeight: 1.5 }}>{fakt}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Slett */}
       {!bekreftSlett ? (
