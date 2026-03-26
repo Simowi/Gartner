@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
-import { Droplets, Leaf, Sun, Sparkles, LogOut } from 'lucide-react'
+import { Droplets, Leaf, Sun, Sparkles } from 'lucide-react'
 import PushVarsler from '@/components/PushVarsler'
 
 interface Plante {
@@ -83,12 +83,11 @@ const tips: { type: 'tips' | 'fakta'; tekst: string }[] = [
 export default function HjemPage() {
   const [planter, setPlanter] = useState<Plante[]>([])
   const [hilsen, setHilsen] = useState('')
+  const [profilBilde, setProfilBilde] = useState('')
+  const [profilInitial, setProfilInitial] = useState('')
   const supabase = createClient()
 
-  async function loggUt() {
-    await supabase.auth.signOut()
-    window.location.href = '/logg-inn'
-  }
+
 
   useEffect(() => {
     async function hentData() {
@@ -96,6 +95,15 @@ export default function HjemPage() {
       if (!user) return
       const navn = hentNavn(user.email || '')
       setHilsen(hentHilsen(navn))
+      setProfilInitial(navn ? navn[0].toUpperCase() : (user.email || 'G')[0].toUpperCase())
+
+      const { data: profil } = await supabase
+        .from('profiles')
+        .select('bilde_url, navn')
+        .eq('id', user.id)
+        .single()
+      if (profil?.bilde_url) setProfilBilde(profil.bilde_url)
+      if (profil?.navn) setProfilInitial(profil.navn[0].toUpperCase())
       const { data } = await supabase
         .from('planter')
         .select('*')
@@ -131,10 +139,16 @@ export default function HjemPage() {
           </h1>
         </div>
         <button
-          onClick={loggUt}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', border: 'none', backgroundColor: '#f0ece3', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#4a4a42', marginTop: '8px', flexShrink: 0 }}
+          onClick={() => window.location.href = '/profil'}
+          style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', backgroundColor: '#d4e8d0', cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '4px', flexShrink: 0 }}
         >
-          <LogOut size={14} color="#4a4a42" /> Logg ut
+          {profilBilde ? (
+            <img src={profilBilde} alt="Profil" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <span style={{ fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 700, color: '#154212' }}>
+              {profilInitial}
+            </span>
+          )}
         </button>
       </div>
 

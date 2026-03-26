@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
   const pathname = request.nextUrl.pathname
-  const erBeskyttet = pathname.startsWith('/hjem') || pathname.startsWith('/planter') || pathname.startsWith('/kalender') || pathname.startsWith('/chat')
+  const erBeskyttet = pathname.startsWith('/hjem') || pathname.startsWith('/planter') || pathname.startsWith('/kalender') || pathname.startsWith('/chat') || pathname.startsWith('/profil')
   const erAuth = pathname.startsWith('/logg-inn') || pathname.startsWith('/registrer')
 
   if (!user && erBeskyttet) {
