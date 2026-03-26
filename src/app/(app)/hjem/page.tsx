@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase'
 import { Droplets, Leaf, Sun, Sparkles } from 'lucide-react'
 import PushVarsler from '@/components/PushVarsler'
 import VærStripe from '@/components/VærStripe'
+import HjemStatistikk from '@/components/HjemStatistikk'
 
 interface Plante {
   id: string
@@ -224,6 +225,13 @@ export default function HjemPage() {
             ))}
           </div>
         )}
+
+        <div style={{ marginTop: '32px' }}>
+          <h2 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '22px', fontWeight: 700, color: '#1c1c18', marginBottom: '16px', letterSpacing: '-0.01em' }}>
+            Din hage
+          </h2>
+          <HjemStatistikk />
+        </div>
 
         <VærStripe />
       </div>
