@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
+
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Leaf, Search, X, AlertTriangle } from 'lucide-react'
 import BildeOpplaster from '@/components/BildeOpplaster'
@@ -17,6 +18,7 @@ export default function NyPlantePage() {
   const [vanningIntervall, setVanningIntervall] = useState('7')
   const [notater, setNotater] = useState('')
   const [bildeUrl, setBildeUrl] = useState('')
+  const [lokalForhåndsvisning, setLokalForhåndsvisning] = useState('')
   const [laster, setLaster] = useState(false)
   const [feil, setFeil] = useState('')
   const søkRef = useRef<HTMLDivElement>(null)
@@ -134,14 +136,18 @@ export default function NyPlantePage() {
         </h1>
       </div>
 
-      <div style={{ width: '80px', height: '80px', borderRadius: '24px', backgroundColor: valgtArt ? '#d4e8d0' : '#f0ece3', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 32px' }}>
-        <Leaf size={36} color="#154212" />
+      <div style={{ width: '80px', height: '80px', borderRadius: '24px', backgroundColor: valgtArt ? '#d4e8d0' : '#f0ece3', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', overflow: 'hidden' }}>
+        {(bildeUrl || lokalForhåndsvisning) ? (
+          <img src={bildeUrl || lokalForhåndsvisning} alt="Plante" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <Leaf size={36} color="#154212" />
+        )}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
         {/* Scan-knapp */}
-        <ScanPlante onArtValgt={(artId, latinsk, norsk, intervall) => {
+        <ScanPlante onArtValgt={async (artId, latinsk, norsk, intervall, bildeBase64) => {
           const funnetArt = planteArtDatabase.find(a => a.id === artId)
           if (funnetArt) {
             setValgtArt(funnetArt)
@@ -151,6 +157,23 @@ export default function NyPlantePage() {
           }
           if (!navn) setNavn(norsk)
           setVanningIntervall(String(intervall))
+
+          if (bildeBase64 && !bildeUrl) {
+            setLokalForhåndsvisning(bildeBase64)
+            try {
+              const { data: { user } } = await supabase.auth.getUser()
+              if (user) {
+                const blob = await fetch(bildeBase64).then(r => r.blob())
+                const filnavn = user.id + '/' + Date.now() + '.jpg'
+                await supabase.storage.from('plantebilder').upload(filnavn, blob, { upsert: true })
+                const { data } = supabase.storage.from('plantebilder').getPublicUrl(filnavn)
+                setBildeUrl(data.publicUrl)
+                setLokalForhåndsvisning('')
+              }
+            } catch (e) {
+              console.error('Bildeopplasting feil:', e)
+            }
+          }
         }} />
 
       {/* Artssøk */}
@@ -228,10 +251,9 @@ export default function NyPlantePage() {
           )}
         </div>
 
-        {/* Bilde */}
+
         <div>
-          <label style={labelStil}>Bilde</label>
-          <BildeOpplaster onBildeLastetOpp={(url) => setBildeUrl(url)} />
+
         </div>
 
       {/* Navn */}

@@ -11,7 +11,7 @@ interface Forslag {
 }
 
 interface Props {
-  onArtValgt: (artId: string, latinskNavn: string, norskNavn: string, vanningIntervall: number) => void
+  onArtValgt: (artId: string, latinskNavn: string, norskNavn: string, vanningIntervall: number, bildeBase64: string) => void
 }
 
 export default function ScanPlante({ onArtValgt }: Props) {
@@ -19,6 +19,7 @@ export default function ScanPlante({ onArtValgt }: Props) {
   const [forslag, setForslag] = useState<Forslag[]>([])
   const [feil, setFeil] = useState('')
   const [valgt, setValgt] = useState<string | null>(null)
+  const [bildeBase64, setBildeBase64] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
   function finnArtIDatabase(latinskNavn: string) {
@@ -39,8 +40,10 @@ export default function ScanPlante({ onArtValgt }: Props) {
 
     const leser = new FileReader()
     leser.onload = async (ev) => {
-      const base64 = (ev.target?.result as string)?.split(',')[1]
+      const fullBase64 = ev.target?.result as string
+      const base64 = fullBase64?.split(',')[1]
       if (!base64) { setLaster(false); return }
+      setBildeBase64(fullBase64)
 
       try {
         const res = await fetch('/api/plantid', {
@@ -86,7 +89,8 @@ export default function ScanPlante({ onArtValgt }: Props) {
       f.artId || '',
       f.navn,
       f.norskNavn,
-      artIDb?.vanningIntervallDager || 7
+      artIDb?.vanningIntervallDager || 7,
+      bildeBase64
     )
   }
 
