@@ -100,12 +100,8 @@ export default function HjemPage() {
   const [hilsen, setHilsen] = useState('')
   const [profilBilde, setProfilBilde] = useState('')
   const [profilInitial, setProfilInitial] = useState('')
-  const [dagensKort, setDagensKort] = useState<TipsKort | null>(null)
+  const dagensKort = tips[new Date().getDate() % tips.length]
   const supabase = createClient()
-
-  useEffect(() => {
-    setDagensKort(tips[Math.floor(Math.random() * tips.length)])
-  }, [])
 
   useEffect(() => {
     async function hentData() {
@@ -178,24 +174,6 @@ export default function HjemPage() {
       <PushVarsler />
       <DagligMelding />
 
-      {dagensKort && (
-        <div style={{ borderRadius: '20px', padding: '20px', marginBottom: '32px', background: 'linear-gradient(135deg, #154212 0%, #2d5a27 100%)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-            {dagensKort.type === 'fakta' ? (
-              <Sparkles size={13} color="rgba(255,255,255,0.6)" />
-            ) : (
-              <Sun size={13} color="rgba(255,255,255,0.6)" />
-            )}
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>
-              {dagensKort.type === 'fakta' ? 'Visste du at' : 'Dagens tips'}
-            </p>
-          </div>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', lineHeight: 1.6, color: 'rgba(255,255,255,0.92)' }}>
-            {dagensKort.tekst}
-          </p>
-        </div>
-      )}
-
       <div>
         <h2 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '22px', fontWeight: 700, color: '#1c1c18', marginBottom: '16px', letterSpacing: '-0.01em' }}>
           {visAllePlanter ? 'Alle planter' : 'Trenger vann snart'}
@@ -247,6 +225,23 @@ export default function HjemPage() {
           </div>
         )}
 
+        {dagensKort && (
+        <div style={{ borderRadius: '20px', padding: '20px', marginBottom: '32px', marginTop: '24px', background: 'linear-gradient(135deg, #154212 0%, #2d5a27 100%)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+            {dagensKort.type === 'fakta' ? (
+              <Sparkles size={13} color="rgba(255,255,255,0.6)" />
+            ) : (
+              <Sun size={13} color="rgba(255,255,255,0.6)" />
+            )}
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>
+              {dagensKort.type === 'fakta' ? 'Visste du at' : 'Dagens tips'}
+            </p>
+          </div>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', lineHeight: 1.6, color: 'rgba(255,255,255,0.92)' }}>
+            {dagensKort.tekst}
+          </p>
+        </div>
+      )}
         <div style={{ marginTop: '32px' }}>
           <h2 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '22px', fontWeight: 700, color: '#1c1c18', marginBottom: '16px', letterSpacing: '-0.01em' }}>
             Din hage
