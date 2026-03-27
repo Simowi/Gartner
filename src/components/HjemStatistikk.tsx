@@ -46,40 +46,27 @@ export default function HjemStatistikk() {
 
         vanningerSisteMåned = logg?.length || 0
 
-        // Streak: antall dager på rad der ingen planter var forfalt
-        const { data: planteMedVanning } = await supabase
-          .from('planter')
-          .select('id, neste_vanning, sist_vannet')
-          .eq('bruker_id', user.id)
+        // Streak: antall dager på rad med minst én vanning
+        const { data: alleVanninger } = await supabase
+          .from('vanningslogg')
+          .select('vannet_at')
+          .in('plante_id', planteIds)
+          .order('vannet_at', { ascending: false })
+          .limit(60)
 
-        if (planteMedVanning) {
-          const iDag = new Date()
-          iDag.setHours(0, 0, 0, 0)
-          let dagSjekk = new Date(iDag)
-          let fortsett = true
-
-          while (fortsett && streak < 365) {
-            const dagSlutt = new Date(dagSjekk)
-            dagSlutt.setHours(23, 59, 59, 999)
-            const dagStart = new Date(dagSjekk)
-            dagStart.setHours(0, 0, 0, 0)
-
-            // Sjekk om noen plante var forfalt denne dagen
-            const noenForfalt = planteMedVanning.some(p => {
-              if (!p.neste_vanning) return false
-              const nesteVanning = new Date(p.neste_vanning)
-              // Planten er forfalt hvis neste_vanning er mer enn 1 dag tilbake
-              const grense = new Date(dagSlutt)
-              grense.setDate(grense.getDate() - 1)
-              return nesteVanning < grense
-            })
-
-            if (noenForfalt) {
-              fortsett = false
-            } else {
-              streak++
-              dagSjekk.setDate(dagSjekk.getDate() - 1)
-            }
+        if (alleVanninger && alleVanninger.length > 0) {
+          const datoer = new Set(
+            alleVanninger.map(v => new Date(v.vannet_at).toISOString().split('T')[0])
+          )
+          const dag = new Date()
+          dag.setHours(0, 0, 0, 0)
+          // Godta at i dag ikke er vannet ennå
+          const iDagStr = dag.toISOString().split('T')[0]
+          if (datoer.has(iDagStr)) streak++
+          dag.setDate(dag.getDate() - 1)
+          while (datoer.has(dag.toISOString().split('T')[0]) && streak < 60) {
+            streak++
+            dag.setDate(dag.getDate() - 1)
           }
         }
       }
