@@ -133,7 +133,9 @@ export default function DagligMelding() {
             </p>
 
             {melding.bilde_url && (
-              <img src={melding.bilde_url} alt="Bilde fra S" style={{ width: '100%', borderRadius: '16px', marginBottom: '20px', objectFit: 'cover', maxHeight: '240px' }} />
+              <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: '16px', overflow: 'hidden', marginBottom: '20px' }}>
+                <img src={melding.bilde_url} alt="Bilde fra S" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
             )}
 
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', color: '#1c1c18', lineHeight: 1.7, fontStyle: 'italic' }}>

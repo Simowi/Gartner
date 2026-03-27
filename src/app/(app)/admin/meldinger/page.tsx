@@ -156,7 +156,9 @@ export default function AdminMeldinger() {
               </div>
 
               {eksisterende?.bilde_url && (
-                <img src={eksisterende.bilde_url} alt="Bilde" style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '12px', marginBottom: '8px' }} />
+                <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: '12px', overflow: 'hidden', marginBottom: '8px' }}>
+                  <img src={eksisterende.bilde_url} alt="Bilde" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
               )}
 
               {eksisterende && !erRedigerer && (
