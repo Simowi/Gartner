@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import PlanteDiagnose from '@/components/PlanteDiagnose'
+import PlanteTidslinje from '@/components/PlanteTidslinje'
 import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeft, Droplets, Leaf, Trash2, MapPin, Calendar, FileText, CheckCircle, Sun, Sprout, AlertTriangle, BookOpen, Pencil } from 'lucide-react'
 import { planteArtDatabase, type PlanteArt } from '@/lib/plantedatabase'
@@ -169,6 +170,7 @@ export default function PlanteProfil() {
           <Droplets size={18} color="white" />
           {vannerNå ? 'Registrerer...' : 'Vann nå'}
         </button>
+        <PlanteTidslinje planteId={plante.id} />
         <PlanteDiagnose planteId={plante.id} planteNavn={plante.navn} />
       </div>
 
