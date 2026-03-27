@@ -238,11 +238,16 @@ export default function HjemPage() {
                 </div>
               </a>
             ))}
+            <button
+              onClick={() => window.location.href = '/planter'}
+              style={{ width: '100%', padding: '12px', borderRadius: '14px', border: 'none', backgroundColor: '#f0ece3', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#4a4a42', marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+            >
+              Se alle {planter.length} planter →
+            </button>
           </div>
         )}
 
         <div style={{ marginTop: '32px' }}>
-          <Sesongkort />
           <h2 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '22px', fontWeight: 700, color: '#1c1c18', marginBottom: '16px', letterSpacing: '-0.01em' }}>
             Din hage
           </h2>
@@ -251,6 +256,7 @@ export default function HjemPage() {
 
         <Plantegalleri />
         <Minneskrin />
+        <Sesongkort />
         <InspoGalleri />
         <DeltAktivitet />
         <VærStripe />
