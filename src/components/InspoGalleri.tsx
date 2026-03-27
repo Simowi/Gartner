@@ -21,7 +21,8 @@ export default function InspoGalleri() {
   const [valgtIndex, setValgtIndex] = useState<number | null>(null)
   const [nåddMaks, setNåddMaks] = useState(false)
   const touchStartX = useRef<number | null>(null)
-  const touchStartY = useRef<number | null>(null)
+  const lastKnappRef = useRef<HTMLDivElement>(null)
+    const touchStartY = useRef<number | null>(null)
 
   async function hentBilder() {
     try {
@@ -58,6 +59,34 @@ export default function InspoGalleri() {
   }
 
   useEffect(() => { hentBilder() }, [])
+
+  useEffect(() => {
+    if (!lastKnappRef.current || nåddMaks) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !lasterMer && !nåddMaks) {
+          hentFlereBilder()
+        }
+      },
+      { threshold: 0.1 }
+    )
+    observer.observe(lastKnappRef.current)
+    return () => observer.disconnect()
+  }, [bilder, lasterMer, nåddMaks])
+
+  useEffect(() => {
+    if (!lastKnappRef.current || nåddMaks) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !lasterMer && !nåddMaks) {
+          hentFlereBilder()
+        }
+      },
+      { threshold: 0.1 }
+    )
+    observer.observe(lastKnappRef.current)
+    return () => observer.disconnect()
+  }, [bilder, lasterMer, nåddMaks])
 
   async function registrerNedlasting(bilde: Bilde) {
     try {
@@ -122,13 +151,8 @@ export default function InspoGalleri() {
         ))}
 
         {!nåddMaks && (
-          <div onClick={hentFlereBilder} style={{ flexShrink: 0, width: '80px', height: '140px', borderRadius: '16px', backgroundColor: '#f0ece3', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: lasterMer ? 'not-allowed' : 'pointer', gap: '8px' }}>
-            {lasterMer ? <Loader size={20} color="#4a4a42" /> : (
-              <>
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '20px' }}>+</p>
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 600, color: '#4a4a42', textAlign: 'center' }}>Mer inspo</p>
-              </>
-            )}
+          <div ref={lastKnappRef} style={{ flexShrink: 0, width: '60px', height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {lasterMer && <Loader size={20} color="#c4c0b7" />}
           </div>
         )}
       </div>
