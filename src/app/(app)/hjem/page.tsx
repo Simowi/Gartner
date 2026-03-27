@@ -8,6 +8,7 @@ import HjemStatistikk from '@/components/HjemStatistikk'
 import Sesongkort from '@/components/Sesongkort'
 import Plantegalleri from '@/components/Plantegalleri'
 import DeltAktivitet from '@/components/DeltAktivitet'
+import InspoGalleri from '@/components/InspoGalleri'
 
 interface Plante {
   id: string
@@ -238,6 +239,7 @@ export default function HjemPage() {
         </div>
 
         <Plantegalleri />
+        <InspoGalleri />
         <DeltAktivitet />
         <VærStripe />
       </div>
