@@ -139,7 +139,7 @@ export default function InspoGalleri() {
           <div
             key={bilde.id}
             onClick={() => åpneBilde(i)}
-            style={{ flexShrink: 0, width: '200px', height: '140px', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', position: 'relative' }}
+            style={{ flexShrink: 0, width: '80vw', height: '260px', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', position: 'relative' }}
           >
             <img src={bilde.tommel} alt="Planteinspo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
             <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px 8px 6px', background: 'linear-gradient(transparent, rgba(0,0,0,0.5))' }}>
@@ -151,7 +151,7 @@ export default function InspoGalleri() {
         ))}
 
         {!nåddMaks && (
-          <div ref={lastKnappRef} style={{ flexShrink: 0, width: '60px', height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div ref={lastKnappRef} style={{ flexShrink: 0, width: '60px', height: '260px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {lasterMer && <Loader size={20} color="#c4c0b7" />}
           </div>
         )}
