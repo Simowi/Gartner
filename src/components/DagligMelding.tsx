@@ -133,7 +133,7 @@ export default function DagligMelding() {
             </p>
 
             {melding.bilde_url && (
-              <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: '16px', overflow: 'hidden', marginBottom: '20px' }}>
+              <div style={{ width: '100%', aspectRatio: '1/1', borderRadius: '16px', overflow: 'hidden', marginBottom: '20px' }}>
                 <img src={melding.bilde_url} alt="Bilde fra S" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
             )}
