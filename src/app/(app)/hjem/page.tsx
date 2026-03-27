@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
-import { Droplets, Leaf, Sun, Sparkles } from 'lucide-react'
+import { Droplets, Leaf, Sun, Sparkles, Bell } from 'lucide-react'
 import PushVarsler from '@/components/PushVarsler'
 import VærStripe from '@/components/VærStripe'
 import HjemStatistikk from '@/components/HjemStatistikk'
@@ -151,9 +151,16 @@ export default function HjemPage() {
             Plantene dine
           </h1>
         </div>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
+        <button
+          onClick={() => window.location.href = '/varsler'}
+          style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', backgroundColor: '#f0ece3', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+        >
+          <Bell size={18} color="#4a4a42" />
+        </button>
         <button
           onClick={() => window.location.href = '/profil'}
-          style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', backgroundColor: '#d4e8d0', cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '4px', flexShrink: 0 }}
+          style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', backgroundColor: '#d4e8d0', cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
         >
           {profilBilde ? (
             <img src={profilBilde} alt="Profil" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -163,6 +170,7 @@ export default function HjemPage() {
             </span>
           )}
         </button>
+        </div>
       </div>
 
       <PushVarsler />
