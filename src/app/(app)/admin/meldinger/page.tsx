@@ -139,8 +139,8 @@ export default function AdminMeldinger() {
                         <Camera size={14} color="#154212" />
                         <input type="file" accept="image/*" onChange={e => { const f = e.target.files?.[0]; if (f) lastOppBilde(dagNummer, f) }} style={{ display: 'none' }} />
                       </label>
-                      <button onClick={() => { setRedigerer(erRedigerer ? null : dagNummer); setNyMelding(eksisterende.melding) }} style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: '#f0ece3', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Save size={14} color="#4a4a42" />
+                      <button onClick={() => { setRedigerer(erRedigerer ? null : dagNummer); setNyMelding(eksisterende.melding) }} style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: erRedigerer ? '#154212' : '#f0ece3', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Save size={14} color={erRedigerer ? 'white' : '#4a4a42'} />
                       </button>
                       <button onClick={() => slettMelding(dagNummer)} style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: '#fdf0ef', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Trash2 size={14} color="#c0392b" />
@@ -162,7 +162,10 @@ export default function AdminMeldinger() {
               )}
 
               {eksisterende && !erRedigerer && (
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#1c1c18', lineHeight: 1.5, fontStyle: 'italic' }}>
+                <p
+                  onClick={() => { setRedigerer(dagNummer); setNyMelding(eksisterende.melding) }}
+                  style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#1c1c18', lineHeight: 1.5, fontStyle: 'italic', cursor: 'pointer' }}
+                >
                   «{eksisterende.melding}»
                 </p>
               )}
