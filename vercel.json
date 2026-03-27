@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/testvarsel",
+      "path": "/api/vaervarsler",
       "schedule": "0 19 * * *"
     }
   ]
