@@ -1,4 +1,5 @@
 'use client'
+import Badges from '@/components/Badges'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
@@ -159,6 +160,8 @@ export default function ProfilPage() {
           {lagret ? 'Lagret! ✓' : lagrer ? 'Lagrer...' : 'Lagre profil'}
         </button>
       </div>
+
+      <Badges />
 
       {/* Admin */}
       <button
