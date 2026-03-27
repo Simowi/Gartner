@@ -254,12 +254,12 @@ export default function HjemPage() {
           <HjemStatistikk />
         </div>
 
+        <VærStripe />
         <Plantegalleri />
         <Minneskrin />
         <Sesongkort />
         <InspoGalleri />
         <DeltAktivitet />
-        <VærStripe />
       </div>
     </div>
   )
