@@ -37,6 +37,24 @@ export default function PushVarsler() {
       if (tillatelse === 'granted') {
         await oppdaterVanningsCache()
         await visTestVarsel()
+
+        // Lagre push-abonnement i Supabase
+        try {
+          const registration = await navigator.serviceWorker.ready
+          const abonnement = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+          })
+          const { data: { user } } = await supabase.auth.getUser()
+          if (user) {
+            await supabase.from('push_abonnementer').upsert({
+              bruker_id: user.id,
+              abonnement: abonnement.toJSON(),
+            }, { onConflict: 'bruker_id' })
+          }
+        } catch (e) {
+          console.error('Push-abonnement feil:', e)
+        }
       }
     } catch (e) {
       console.error('Varsel-feil:', e)
