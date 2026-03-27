@@ -126,7 +126,7 @@ export default function DagligMelding() {
             </button>
 
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#c0392b', marginBottom: '4px' }}>
-              Dag {melding.dag_nummer} 💌
+              {melding.dag_nummer > 0 ? 'Dag ' + melding.dag_nummer + ' 💌' : '💌'}
             </p>
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#4a4a42', marginBottom: '20px' }}>
               {new Date(melding.dato).toLocaleDateString('nb-NO', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -137,7 +137,7 @@ export default function DagligMelding() {
             )}
 
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', color: '#1c1c18', lineHeight: 1.7, fontStyle: 'italic' }}>
-              «{melding.melding}»
+              {melding.melding}
             </p>
 
             <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '14px', fontWeight: 700, color: '#c0392b', marginTop: '16px', textAlign: 'right' }}>
