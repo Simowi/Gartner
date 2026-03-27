@@ -160,6 +160,14 @@ export default function ProfilPage() {
         </button>
       </div>
 
+      {/* Admin */}
+      <button
+        onClick={() => window.location.href = '/admin/meldinger'}
+        style={{ width: '100%', padding: '14px', borderRadius: '14px', border: 'none', backgroundColor: '#f0ece3', color: '#1c1c18', fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '10px' }}
+      >
+        💌 Rediger daglige meldinger
+      </button>
+
       {/* Logg ut */}
       <button
         onClick={loggUt}

@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase'
 import { Droplets, Leaf, Sun, Sparkles, Bell } from 'lucide-react'
 import PushVarsler from '@/components/PushVarsler'
 import VærStripe from '@/components/VærStripe'
+import DagligMelding from '@/components/DagligMelding'
 import HjemStatistikk from '@/components/HjemStatistikk'
 import Sesongkort from '@/components/Sesongkort'
 import Plantegalleri from '@/components/Plantegalleri'
@@ -174,6 +175,7 @@ export default function HjemPage() {
       </div>
 
       <PushVarsler />
+      <DagligMelding />
 
       {dagensKort && (
         <div style={{ borderRadius: '20px', padding: '20px', marginBottom: '32px', background: 'linear-gradient(135deg, #154212 0%, #2d5a27 100%)' }}>
