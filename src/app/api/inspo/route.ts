@@ -27,7 +27,7 @@ export async function GET() {
     const bilder = data.map((b: any) => ({
       id: b.id,
       url: b.urls.regular,
-      tommel: b.urls.small,
+      tommel: b.urls.regular,
       fotograf: b.user.name,
       fotografUrl: b.user.links.html,
       unsplashUrl: b.links.html,
