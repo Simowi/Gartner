@@ -96,6 +96,7 @@ const tips: TipsKort[] = [
 
 export default function HjemPage() {
   const [planter, setPlanter] = useState<Plante[]>([])
+  const [visAllePlanter, setVisAllePlanter] = useState(false)
   const [hilsen, setHilsen] = useState('')
   const [profilBilde, setProfilBilde] = useState('')
   const [profilInitial, setProfilInitial] = useState('')
@@ -127,7 +128,6 @@ export default function HjemPage() {
         .select('*')
         .eq('bruker_id', user.id)
         .order('neste_vanning', { ascending: true })
-        .limit(5)
       if (data) setPlanter(data)
     }
     hentData()
@@ -198,7 +198,7 @@ export default function HjemPage() {
 
       <div>
         <h2 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '22px', fontWeight: 700, color: '#1c1c18', marginBottom: '16px', letterSpacing: '-0.01em' }}>
-          Trenger vann snart
+          {visAllePlanter ? 'Alle planter' : 'Trenger vann snart'}
         </h2>
 
         {planter.length === 0 ? (
@@ -211,7 +211,7 @@ export default function HjemPage() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {planter.map((plante) => (
+            {(visAllePlanter ? planter : planter.slice(0, 5)).map((plante) => (
               <a key={plante.id} href={'/planter/' + plante.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '16px', padding: '16px', backgroundColor: '#f0ece3', textDecoration: 'none' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '14px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
