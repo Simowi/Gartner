@@ -250,9 +250,9 @@ export default function HjemPage() {
         </div>
 
         <Plantegalleri />
+        <Minneskrin />
         <InspoGalleri />
         <DeltAktivitet />
-        <Minneskrin />
         <VærStripe />
       </div>
     </div>

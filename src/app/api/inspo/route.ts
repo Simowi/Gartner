@@ -5,7 +5,16 @@ export async function GET() {
   if (!nøkkel) return NextResponse.json({ feil: 'Mangler nøkkel' }, { status: 500 })
 
   try {
-    const søkeord = ['houseplants', 'indoor plants', 'plant shelfie', 'urban jungle', 'scandinavian plants']
+    const søkeord = [
+    'scandinavian interior plants',
+    'japandi interior plants',
+    'mid century modern houseplants',
+    'minimal interior botanical',
+    'nordic home plants styling',
+    'japandi living room plants',
+    'indoor plants aesthetic interior',
+    'mid century modern indoor garden',
+  ]
     const tilfeldig = søkeord[Math.floor(Math.random() * søkeord.length)]
 
     const res = await fetch(
