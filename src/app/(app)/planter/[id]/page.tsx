@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
+import PlanteDiagnose from '@/components/PlanteDiagnose'
 import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeft, Droplets, Leaf, Trash2, MapPin, Calendar, FileText, CheckCircle, Sun, Sprout, AlertTriangle, BookOpen, Pencil } from 'lucide-react'
 import { planteArtDatabase, type PlanteArt } from '@/lib/plantedatabase'
@@ -163,10 +164,13 @@ export default function PlanteProfil() {
       </div>
 
       {/* Vann nå-knapp */}
-      <button onClick={registrerVanning} disabled={vannerNå} style={{ width: '100%', padding: '18px', borderRadius: '16px', border: 'none', background: 'linear-gradient(135deg, #154212 0%, #2d5a27 100%)', color: 'white', fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 700, cursor: vannerNå ? 'not-allowed' : 'pointer', opacity: vannerNå ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '24px' }}>
-        <Droplets size={18} color="white" />
-        {vannerNå ? 'Registrerer...' : 'Registrer vanning nå'}
-      </button>
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '24px', alignItems: 'stretch' }}>
+        <button onClick={registrerVanning} disabled={vannerNå} style={{ flex: 1, padding: '18px', borderRadius: '16px', border: 'none', background: 'linear-gradient(135deg, #154212 0%, #2d5a27 100%)', color: 'white', fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 700, cursor: vannerNå ? 'not-allowed' : 'pointer', opacity: vannerNå ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <Droplets size={18} color="white" />
+          {vannerNå ? 'Registrerer...' : 'Vann nå'}
+        </button>
+        <PlanteDiagnose planteId={plante.id} planteNavn={plante.navn} />
+      </div>
 
       {/* Info-kort */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
