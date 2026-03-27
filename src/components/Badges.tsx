@@ -72,6 +72,14 @@ export default function Badges() {
       }
     }
 
+    // Dager siden registrering
+    const førstePlanteDato = planter && planter.length > 0 
+      ? new Date(planter.sort((a,b) => new Date(a.opprettet_at).getTime() - new Date(b.opprettet_at).getTime())[0].opprettet_at)
+      : null
+    const dagerSidenStart = førstePlanteDato 
+      ? Math.floor((Date.now() - førstePlanteDato.getTime()) / 86400000) 
+      : 0
+
     const alleBadges: Badge[] = [
       {
         id: 'første-plante',
@@ -79,7 +87,48 @@ export default function Badges() {
         navn: 'Første steg',
         beskrivelse: 'La til sin første plante',
         oppnådd: antallPlanter >= 1,
-        dato: planter?.[0]?.opprettet_at,
+      },
+      {
+        id: 'grønn-tommel',
+        ikon: '🪴',
+        navn: 'Grønn tommel',
+        beskrivelse: 'Har 3 planter i samlingen',
+        oppnådd: antallPlanter >= 3,
+      },
+      {
+        id: 'samler',
+        ikon: '🌿',
+        navn: 'Samler',
+        beskrivelse: 'Har 5 planter i samlingen',
+        oppnådd: antallPlanter >= 5,
+      },
+      {
+        id: 'entusiast',
+        ikon: '🌻',
+        navn: 'Hageentusiast',
+        beskrivelse: 'Har 10 planter i samlingen',
+        oppnådd: antallPlanter >= 10,
+      },
+      {
+        id: 'jungelkonge',
+        ikon: '🌴',
+        navn: 'Jungelkonge',
+        beskrivelse: 'Har 15 planter i samlingen',
+        oppnådd: antallPlanter >= 15,
+      },
+      {
+        id: 'romorganisator',
+        ikon: '🏡',
+        navn: 'Romorganisator',
+        beskrivelse: 'Planter i 3 ulike rom',
+        oppnådd: antallRom >= 3,
+      },
+      {
+        id: 'full-bolig',
+        ikon: '🏠',
+        navn: 'Full bolig',
+        beskrivelse: 'Planter i 5 ulike rom',
+        oppnådd: antallRom >= 5,
       },
       {
         id: 'første-vanning',
@@ -96,27 +145,6 @@ export default function Badges() {
         oppnådd: streak >= 3,
       },
       {
-        id: 'samler',
-        ikon: '🌿',
-        navn: 'Samler',
-        beskrivelse: 'Har 5 planter i samlingen',
-        oppnådd: antallPlanter >= 5,
-      },
-      {
-        id: 'romorganisator',
-        ikon: '🏡',
-        navn: 'Romorganisator',
-        beskrivelse: 'Planter i 3 ulike rom',
-        oppnådd: antallRom >= 3,
-      },
-      {
-        id: 'fotografen',
-        ikon: '📸',
-        navn: 'Fotografen',
-        beskrivelse: 'Lastet opp bilde til tidslinje',
-        oppnådd: harTidslinjeBilde,
-      },
-      {
         id: 'dedikert',
         ikon: '🌳',
         navn: 'Dedikert gartner',
@@ -124,18 +152,53 @@ export default function Badges() {
         oppnådd: streak >= 7,
       },
       {
-        id: 'entusiast',
-        ikon: '🌻',
-        navn: 'Hageentusiast',
-        beskrivelse: 'Har 10 planter i samlingen',
-        oppnådd: antallPlanter >= 10,
+        id: 'vanningsvenn',
+        ikon: '🌊',
+        navn: 'Vanningsvenn',
+        beskrivelse: 'Vannet 14 dager på rad',
+        oppnådd: streak >= 14,
       },
       {
-        id: 'stamgjest',
-        ikon: '⭐',
-        navn: 'Stamgjest',
-        beskrivelse: 'Åpnet appen 7 dager på rad',
-        oppnådd: false, // Krever egen logg – fremtidig funksjon
+        id: 'vannmester',
+        ikon: '🏆',
+        navn: 'Vannmester',
+        beskrivelse: 'Vannet 30 dager på rad',
+        oppnådd: streak >= 30,
+      },
+      {
+        id: 'fotografen',
+        ikon: '📸',
+        navn: 'Fotografen',
+        beskrivelse: 'Lastet opp første bilde til tidslinje',
+        oppnådd: harTidslinjeBilde,
+      },
+      {
+        id: 'historiker',
+        ikon: '🎞️',
+        navn: 'Historiker',
+        beskrivelse: '5 bilder i tidslinje',
+        oppnådd: (tidslinje?.length ?? 0) >= 5,
+      },
+      {
+        id: 'dokumentarist',
+        ikon: '📽️',
+        navn: 'Dokumentarist',
+        beskrivelse: '10 bilder i tidslinje',
+        oppnådd: (tidslinje?.length ?? 0) >= 10,
+      },
+      {
+        id: 'jubilant',
+        ikon: '🎂',
+        navn: 'Jubilant',
+        beskrivelse: 'Brukt appen i 30 dager',
+        oppnådd: dagerSidenStart >= 30,
+      },
+      {
+        id: 'trofast',
+        ikon: '💚',
+        navn: 'Trofaste',
+        beskrivelse: 'Brukt appen i 90 dager',
+        oppnådd: dagerSidenStart >= 90,
       },
     ]
 
