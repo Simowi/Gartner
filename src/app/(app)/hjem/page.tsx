@@ -5,6 +5,7 @@ import { Droplets, Leaf, Sun, Sparkles, Bell } from 'lucide-react'
 import PushVarsler from '@/components/PushVarsler'
 import VærStripe from '@/components/VærStripe'
 import DagligMelding from '@/components/DagligMelding'
+import Minneskrin from '@/components/Minneskrin'
 import HjemStatistikk from '@/components/HjemStatistikk'
 import Sesongkort from '@/components/Sesongkort'
 import Plantegalleri from '@/components/Plantegalleri'
@@ -251,6 +252,7 @@ export default function HjemPage() {
         <Plantegalleri />
         <InspoGalleri />
         <DeltAktivitet />
+        <Minneskrin />
         <VærStripe />
       </div>
     </div>
