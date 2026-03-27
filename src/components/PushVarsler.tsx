@@ -3,6 +3,18 @@ import { useEffect, useState } from 'react'
 import { Bell, BellOff, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 
+// Hjelpefunksjon for å konvertere VAPID-nøkkel (spesielt viktig for iOS/Safari)
+function urlB64ToUint8Array(base64String: string) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
+  const rawData = window.atob(base64)
+  const outputArray = new Uint8Array(rawData.length)
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i)
+  }
+  return outputArray
+}
+
 export default function PushVarsler() {
   const [støttet, setStøttet] = useState(false)
   const [tillatelse, setTillatelse] = useState<NotificationPermission>('default')
@@ -32,25 +44,45 @@ export default function PushVarsler() {
   async function aktiverVarsler() {
     setLaster(true)
     try {
-      const tillatelse = await Notification.requestPermission()
-      setTillatelse(tillatelse)
-      if (tillatelse === 'granted') {
+      const nyTillatelse = await Notification.requestPermission()
+      setTillatelse(nyTillatelse)
+      
+      if (nyTillatelse === 'granted') {
         await oppdaterVanningsCache()
         await visTestVarsel()
 
         // Lagre push-abonnement i Supabase
         try {
           const registration = await navigator.serviceWorker.ready
+          const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+          
+          if (!vapidKey) {
+            throw new Error('Mangler NEXT_PUBLIC_VAPID_PUBLIC_KEY i miljøvariablene!')
+          }
+
+          const convertedVapidKey = urlB64ToUint8Array(vapidKey)
           const abonnement = await registration.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+            applicationServerKey: convertedVapidKey
           })
-          const { data: { user } } = await supabase.auth.getUser()
-          if (user) {
-            await supabase.from('push_abonnementer').upsert({
+
+          const { data: { user }, error: authError } = await supabase.auth.getUser()
+          
+          if (authError || !user) {
+            console.error('Feil: Fant ikke innlogget bruker', authError)
+          } else {
+            console.log('Sender abonnement til Supabase for bruker:', user.id)
+            
+            const { error: dbError } = await supabase.from('push_abonnementer').upsert({
               bruker_id: user.id,
               abonnement: abonnement.toJSON(),
             }, { onConflict: 'bruker_id' })
+
+            if (dbError) {
+              console.error('Supabase lagringsfeil:', dbError)
+            } else {
+              console.log('Suksess! Push-abonnement er lagret i databasen.')
+            }
           }
         } catch (e) {
           console.error('Push-abonnement feil:', e)
