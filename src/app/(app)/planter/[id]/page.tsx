@@ -170,7 +170,6 @@ export default function PlanteProfil() {
           <Droplets size={18} color="white" />
           {vannerNå ? 'Registrerer...' : 'Vann nå'}
         </button>
-        <PlanteTidslinje planteId={plante.id} />
         <PlanteDiagnose planteId={plante.id} planteNavn={plante.navn} />
       </div>
 
@@ -291,6 +290,8 @@ export default function PlanteProfil() {
           </div>
         </div>
       )}
+
+      <PlanteTidslinje planteId={plante.id} />
 
       {/* Slett */}
       {!bekreftSlett ? (
