@@ -58,7 +58,7 @@ export default function DeltAktivitet() {
         .select('id, navn, bilde_url')
         .in('id', brukerIds)
 
-      const { data: brukere } = await supabase.auth.admin?.listUsers ? null : { data: null }
+
 
       const result: Aktivitet[] = []
       for (const innslag of logg.slice(0, 5)) {
