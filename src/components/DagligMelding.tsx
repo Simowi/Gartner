@@ -90,7 +90,7 @@ export default function DagligMelding() {
   const eldsteUleste = uleste[0]
   const antallUleste = uleste.length
 
-  if (laster || meldinger.length === 0) return null
+  if (laster || meldinger.length === 0 || antallUleste === 0) return null
 
   return (
     <>
