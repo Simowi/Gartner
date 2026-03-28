@@ -42,6 +42,112 @@ function hentHilsen(navn: string): string {
   return 'God natt, ' + navn + '!'
 }
 
+function hentPersonligTittel(epost: string): string {
+  if (typeof window === 'undefined') return 'Plantene dine'
+  const time = new Date().getHours()
+  const dag = new Date().getDay()
+  const erHelg = dag === 0 || dag === 5 || dag === 6
+  const velg = (liste: string[]) => liste[Math.floor(Math.random() * liste.length)]
+  const erOda = epost === 'oda.v.lunder@gmail.com'
+
+  if (!erOda) {
+    if (time >= 5 && time < 10) return erHelg ? velg([
+      'Helgemorgen i hagen ☀️',
+      'Plantene er våkne 🌱',
+      'Rolig morgen med grønt 🌿',
+    ]) : velg([
+      'Plantene dine 🌱',
+      'God morgen, hagen 🌿',
+      'En ny dag i grønnsaken ☀️',
+      'Hva vokser i dag? 🪴',
+    ])
+    if (time >= 10 && time < 13) return velg([
+      'Hagen din 🌿',
+      'Samlingen din 🪴',
+      'En sjekkerunde? 🌱',
+      'Plantene dine ☀️',
+      'Grønn formiddag 🌸',
+    ])
+    if (time >= 13 && time < 18) return velg([
+      'Plantene dine 🌿',
+      'Ettermiddagen er grønn 🌱',
+      'Hagen din venter 🪴',
+      'Et grønt øyeblikk ☀️',
+      'Samlingen din 🌿',
+    ])
+    if (time >= 18 && time < 22) return velg([
+      'Kveldshagen 🌙',
+      'Plantene dine 🌿',
+      'En stille kveldsrunde 🕯️',
+      'Hagen din i kveld 🌙',
+    ])
+    return velg([
+      'Plantene dine 🌛',
+      'Nattehagen 🌙',
+      'Sent oppe? 🌿',
+    ])
+  }
+
+  if (time >= 5 && time < 10) return erHelg ? velg([
+    'God helgemorgen, Shnæffen 🌸',
+    'Søndagsro og grønne blader 🌿',
+    'Lørdag med plantene ☀️',
+    'En rolig morgen i hagen 🪴',
+    'Kaffe og planter? ☕🌱',
+  ]) : velg([
+    'God morgen, grønne sjel 🌱',
+    'En ny dag for plantene ☀️',
+    'Hva vokser i dag? 🌿',
+    'Morgenstund har grønne blader 🌸',
+    'Dagens første sollys 🌤️',
+    'Opp og vann! 💧🌱',
+    'Plantene sier god morgen 🌸',
+  ])
+  if (time >= 10 && time < 13) return erHelg ? velg([
+    'Hva blomstrer i dag? 🌸',
+    'Helgens grønne øyeblikk 🌿',
+    'Litt plantetid? 🪴',
+    'Søndag = plantedag 🌱',
+    'Kanskje litt vanning? 💧',
+  ]) : velg([
+    'Hva trenger plantene i dag? 🌿',
+    'En liten sjekkerunde 🪴',
+    'Midtdagens grønne pause 🌱',
+    'Plantene venter på deg 🌸',
+    'Er noen tørste? 💧🌿',
+    'Grønn formiddag 🌸',
+  ])
+  if (time >= 13 && time < 18) return erHelg ? velg([
+    'Helgens grønne stund ☀️',
+    'Ettermiddagsro med plantene 🌿',
+    'En rolig helgeettermiddag 🌸',
+    'Planteparade? 🪴🌸',
+  ]) : velg([
+    'Et øyeblikk med plantene ☀️',
+    'Ettermiddagsrunden 🌿',
+    'Dagens grønne pause 🪴',
+    'Litt ro midt i dagen 🌱',
+    'Plantene savnet deg 🌸',
+    'Grønn ettermiddag ☀️',
+  ])
+  if (time >= 18 && time < 22) return velg([
+    'Kveldsrunden 🌙',
+    'God kveld i hagen 🌿',
+    'Kveldsstemning 🕯️',
+    'Plantene sover snart 🌙',
+    'En stille kveld med grønt 🌿',
+    'Kveldssjekk 🌿🌙',
+    'Nesten leggetid for plantene 🌛',
+  ])
+  return velg([
+    'Sent oppe igjen? 🌛',
+    'Nattevakt i hagen 🌙',
+    'Stille natt, grønne planter 🌿',
+    'Plantene sover – du da? 🌛',
+    'Nattehagen 🌙',
+  ])
+}
+
 const tips: TipsKort[] = [
   { type: 'tips', tekst: 'Stikk fingeren 2–3 cm ned i jorda før du vanner – er det fremdeles fuktig, kan du vente litt til.' },
   { type: 'tips', tekst: 'Tørk støv av bladene jevnlig med en fuktig klut. Støvete blader fotosyntiserer dårligere.' },
@@ -103,6 +209,8 @@ export default function HjemPage() {
 
   useEffect(() => { setMounted(true) }, [])
   const [hilsen, setHilsen] = useState('')
+  const [brukerEpost, setBrukerEpost] = useState('')
+  const [tittel, setTittel] = useState('Plantene dine')
   const [profilBilde, setProfilBilde] = useState('')
   const [profilInitial, setProfilInitial] = useState('')
   const dagensKort = tips[new Date().getDate() % tips.length]
@@ -115,6 +223,9 @@ export default function HjemPage() {
       if (!user) return
       const navn = hentNavn(user.email || '')
       setHilsen(hentHilsen(navn))
+      const epost = user.email || ''
+      setBrukerEpost(epost)
+      setTittel(hentPersonligTittel(epost))
       setProfilInitial(navn ? navn[0].toUpperCase() : (user.email || 'G')[0].toUpperCase())
 
       const [{ data: profil }, { data }] = await Promise.all([
@@ -177,7 +288,7 @@ export default function HjemPage() {
             {hilsen}
           </p>
           <h1 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '42px', fontWeight: 800, color: '#1c1c18', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
-            Plantene dine
+            {tittel}
           </h1>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
