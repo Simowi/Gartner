@@ -39,3 +39,8 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Manrope', sans-serif;
 }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}

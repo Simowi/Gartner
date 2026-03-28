@@ -99,6 +99,9 @@ export default function HjemPage() {
   const [planter, setPlanter] = useState<Plante[]>([])
   const [visAllePlanter, setVisAllePlanter] = useState(false)
   const [laster, setLaster] = useState(true)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
   const [hilsen, setHilsen] = useState('')
   const [profilBilde, setProfilBilde] = useState('')
   const [profilInitial, setProfilInitial] = useState('')
@@ -135,44 +138,32 @@ export default function HjemPage() {
     return 'Om ' + diff + ' dager'
   }
 
-  if (laster) return (
+  if (!mounted || laster) return (
     <div style={{ paddingTop: '52px', paddingBottom: '32px' }}>
-      <style>{`
-        @keyframes shimmer {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
-        }
-        .skeleton {
-          background: linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%);
-          background-size: 200% 100%;
-          animation: shimmer 1.5s infinite;
-          border-radius: 12px;
-        }
-      `}</style>
 
       {/* Hilsen skeleton */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '32px' }}>
         <div>
-          <div className="skeleton" style={{ width: '120px', height: '12px', marginBottom: '10px' }} />
-          <div className="skeleton" style={{ width: '200px', height: '40px' }} />
+          <div style={{ background: 'linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite', borderRadius: '12px', width: '120px', height: '12px', marginBottom: '10px' }} />
+          <div style={{ background: 'linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite', borderRadius: '12px', width: '200px', height: '40px' }} />
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <div className="skeleton" style={{ width: '44px', height: '44px', borderRadius: '50%' }} />
-          <div className="skeleton" style={{ width: '44px', height: '44px', borderRadius: '50%' }} />
+          <div style={{ background: 'linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite', borderRadius: '12px', width: '44px', height: '44px', borderRadius: '50%' }} />
+          <div style={{ background: 'linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite', borderRadius: '12px', width: '44px', height: '44px', borderRadius: '50%' }} />
         </div>
       </div>
 
       {/* Plantliste skeleton */}
-      <div className="skeleton" style={{ width: '160px', height: '20px', marginBottom: '16px' }} />
+      <div style={{ background: 'linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite', borderRadius: '12px', width: '160px', height: '20px', marginBottom: '16px' }} />
       {[1,2,3].map(i => (
-        <div key={i} className="skeleton" style={{ width: '100%', height: '72px', marginBottom: '10px' }} />
+        <div key={i} style={{ background: 'linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite', borderRadius: '12px', width: '100%', height: '72px', marginBottom: '10px' }} />
       ))}
 
       {/* Statistikk skeleton */}
-      <div className="skeleton" style={{ width: '100px', height: '20px', marginBottom: '16px', marginTop: '32px' }} />
+      <div style={{ background: 'linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite', borderRadius: '12px', width: '100px', height: '20px', marginBottom: '16px', marginTop: '32px' }} />
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
         {[1,2,3,4].map(i => (
-          <div key={i} className="skeleton" style={{ height: '80px', borderRadius: '16px' }} />
+          <div key={i} style={{ background: 'linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite', borderRadius: '12px', height: '80px' }} />
         ))}
       </div>
     </div>
