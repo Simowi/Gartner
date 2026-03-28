@@ -261,7 +261,7 @@ export default function KalenderPage() {
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
                               {plante.bilde_url ? (
-                                <img src={plante.bilde_url} alt={plante.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <img src={plante.bilde_url + '?width=72&height=72&resize=cover'} alt={plante.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading='lazy' />
                               ) : (
                                 <Leaf size={16} color="#154212" />
                               )}

@@ -71,6 +71,8 @@ export default function PlanterPage() {
     })
   }
 
+  const miniatyrbilde = (url: string) => url + '?width=104&height=104&resize=cover'
+
   return (
     <div style={{ paddingTop: '52px', paddingBottom: '32px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '36px' }}>
@@ -87,11 +89,7 @@ export default function PlanterPage() {
         </a>
       </div>
 
-      {laster ? (
-        <div style={{ textAlign: 'center', padding: '48px 0' }}>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42' }}>Laster planter...</p>
-        </div>
-      ) : planter.length === 0 ? (
+      {planter.length === 0 ? (
         <div style={{ borderRadius: '20px', padding: '48px 24px', textAlign: 'center', backgroundColor: '#f0ece3' }}>
           <Leaf size={40} color="#c4c0b7" style={{ margin: '0 auto 16px' }} />
           <h3 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '18px', fontWeight: 700, color: '#1c1c18', marginBottom: '8px' }}>
@@ -127,7 +125,7 @@ export default function PlanterPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{ width: '52px', height: '52px', borderRadius: '14px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
                         {plante.bilde_url ? (
-                          <img src={plante.bilde_url} alt={plante.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <img src={miniatyrbilde(plante.bilde_url)} alt={plante.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
                         ) : (
                           <Leaf size={20} color="#154212" />
                         )}

@@ -180,7 +180,7 @@ export default function PlanteTidslinje({ planteId }: { planteId: string }) {
               style={{ flexShrink: 0, width: '120px', cursor: 'pointer' }}
             >
               <div style={{ width: '120px', height: '120px', borderRadius: '14px', overflow: 'hidden', marginBottom: '6px' }}>
-                <img src={el.bilde_url} alt="Tidslinje" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                <img src={el.bilde_url + '?width=240&height=240&resize=cover'} alt="Tidslinje" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
               </div>
               <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', color: '#4a4a42', textAlign: 'center' }}>
                 {formaterDato(el.opprettet_at)}

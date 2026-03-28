@@ -99,7 +99,7 @@ export default function Minneskrin() {
               >
                 {m.bilde_url ? (
                   <div style={{ width: '100%', aspectRatio: '1/1', overflow: 'hidden' }}>
-                    <img src={m.bilde_url} alt="Minne" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={m.bilde_url + '?width=200&height=200&resize=cover'} alt="Minne" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" loading='lazy' />
                   </div>
                 ) : (
                   <div style={{ width: '100%', aspectRatio: '1/1', backgroundColor: '#fdf0ef', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px' }}>
@@ -152,7 +152,7 @@ export default function Minneskrin() {
                 >
                   {m.bilde_url ? (
                     <div style={{ width: '100%', aspectRatio: '1/1', overflow: 'hidden' }}>
-                      <img src={m.bilde_url} alt="Minne" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={m.bilde_url + '?width=200&height=200&resize=cover'} alt="Minne" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" loading='lazy' />
                     </div>
                   ) : (
                     <div style={{ width: '100%', aspectRatio: '1/1', backgroundColor: '#fdf0ef', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px' }}>

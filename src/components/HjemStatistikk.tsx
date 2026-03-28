@@ -29,30 +29,29 @@ export default function HjemStatistikk() {
       const antallPlanter = planter.length
       const rom = new Set(planter.map(p => p.plassering).filter(Boolean))
       const antallRom = rom.size
-
-      const månedSiden = new Date()
-      månedSiden.setDate(månedSiden.getDate() - 30)
-
       const planteIds = planter.map(p => p.id)
       let vanningerSisteMåned = 0
       let streak = 0
 
       if (planteIds.length > 0) {
-        const { data: logg } = await supabase
-          .from('vanningslogg')
-          .select('vannet_at')
-          .in('plante_id', planteIds)
-          .gte('vannet_at', månedSiden.toISOString())
+        const månedSiden = new Date()
+        månedSiden.setDate(månedSiden.getDate() - 30)
+
+        const [{ data: logg }, { data: alleVanninger }] = await Promise.all([
+          supabase
+            .from('vanningslogg')
+            .select('vannet_at')
+            .in('plante_id', planteIds)
+            .gte('vannet_at', månedSiden.toISOString()),
+          supabase
+            .from('vanningslogg')
+            .select('vannet_at')
+            .in('plante_id', planteIds)
+            .order('vannet_at', { ascending: false })
+            .limit(60)
+        ])
 
         vanningerSisteMåned = logg?.length || 0
-
-        // Streak: antall dager på rad med minst én vanning
-        const { data: alleVanninger } = await supabase
-          .from('vanningslogg')
-          .select('vannet_at')
-          .in('plante_id', planteIds)
-          .order('vannet_at', { ascending: false })
-          .limit(60)
 
         if (alleVanninger && alleVanninger.length > 0) {
           const datoer = new Set(
@@ -60,7 +59,6 @@ export default function HjemStatistikk() {
           )
           const dag = new Date()
           dag.setHours(0, 0, 0, 0)
-          // Godta at i dag ikke er vannet ennå
           const iDagStr = dag.toISOString().split('T')[0]
           if (datoer.has(iDagStr)) streak++
           dag.setDate(dag.getDate() - 1)
@@ -76,7 +74,27 @@ export default function HjemStatistikk() {
     hentStatistikk()
   }, [])
 
-  if (!stats) return null
+  const skjelett = (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '32px' }}>
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+      `}</style>
+      {[0,1,2,3].map(i => (
+        <div key={i} style={{ borderRadius: '16px', padding: '16px', backgroundColor: '#f0ece3', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(90deg, #e8e4db 25%, #f0ece3 50%, #e8e4db 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite', flexShrink: 0 }} />
+          <div>
+            <div style={{ width: '32px', height: '22px', borderRadius: '6px', background: 'linear-gradient(90deg, #e8e4db 25%, #f0ece3 50%, #e8e4db 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite', marginBottom: '6px' }} />
+            <div style={{ width: '60px', height: '11px', borderRadius: '4px', background: 'linear-gradient(90deg, #e8e4db 25%, #f0ece3 50%, #e8e4db 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite' }} />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+
+  if (!stats) return skjelett
 
   const kort = [
     { ikon: <Leaf size={18} color="#154212" />, verdi: String(stats.antallPlanter), label: stats.antallPlanter === 1 ? 'plante' : 'planter' },
