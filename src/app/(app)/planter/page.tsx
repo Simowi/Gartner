@@ -32,6 +32,22 @@ export default function PlanterPage() {
     hentPlanter()
   }, [])
 
+  if (laster) return (
+    <div style={{ paddingTop: '52px', paddingBottom: '32px' }}>
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        .skeleton { background: linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 12px; }
+      `}</style>
+      <div className="skeleton" style={{ width: '140px', height: '36px', marginBottom: '24px' }} />
+      {[1,2,3,4,5].map(i => (
+        <div key={i} className="skeleton" style={{ width: '100%', height: '72px', marginBottom: '10px' }} />
+      ))}
+    </div>
+  )
+
   const dagTilVanning = (dato: string) => {
     if (!dato) return null
     const diff = Math.ceil((new Date(dato).getTime() - Date.now()) / 86400000)
