@@ -1,9 +1,25 @@
 'use client'
+import { useState, useEffect } from 'react'
+import Onboarding from '@/components/Onboarding'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Leaf, Plus, CalendarDays } from 'lucide-react'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const [visOnboarding, setVisOnboarding] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    const sett = localStorage.getItem('gartner_onboarding_sett')
+    if (!sett) setVisOnboarding(true)
+  }, [])
+
+  function onFerdig() {
+    localStorage.setItem('gartner_onboarding_sett', 'ja')
+    setVisOnboarding(false)
+  }
+
   const pathname = usePathname()
 
   const nav = [
@@ -15,6 +31,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#fcf9f2' }}>
+      {mounted && visOnboarding && <Onboarding onFerdig={onFerdig} />}
       <main style={{ paddingBottom: '100px', maxWidth: '640px', margin: '0 auto', padding: '0 24px 100px 24px' }}>
         {children}
       </main>
