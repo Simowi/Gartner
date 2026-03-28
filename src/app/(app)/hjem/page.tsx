@@ -148,8 +148,8 @@ export default function HjemPage() {
           <div style={{ background: 'linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite', borderRadius: '12px', width: '200px', height: '40px' }} />
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <div style={{ background: 'linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite', borderRadius: '12px', width: '44px', height: '44px', borderRadius: '50%' }} />
-          <div style={{ background: 'linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite', borderRadius: '12px', width: '44px', height: '44px', borderRadius: '50%' }} />
+          <div style={{ background: 'linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite', width: '44px', height: '44px', borderRadius: '50%' }} />
+          <div style={{ background: 'linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite', width: '44px', height: '44px', borderRadius: '50%' }} />
         </div>
       </div>
 
