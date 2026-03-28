@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { ArrowLeft, Plus, Save, Trash2, Camera } from 'lucide-react'
 
@@ -32,6 +33,7 @@ export default function AdminMeldinger() {
   const [lasterOppBilde, setLasterOppBilde] = useState<number | null>(null)
   const [tilgang, setTilgang] = useState(false)
   const [ventendeBilde, setVentendeBilde] = useState<File | null>(null)
+  const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => {
@@ -41,7 +43,7 @@ export default function AdminMeldinger() {
         setTilgang(true)
         hentMeldinger()
       } else {
-        window.location.href = '/hjem'
+        router.push('/hjem')
       }
     }
     sjekkTilgang()

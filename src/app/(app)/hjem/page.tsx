@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { Droplets, Leaf, Sun, Sparkles, Bell } from 'lucide-react'
 import PushVarsler from '@/components/PushVarsler'
@@ -101,6 +102,7 @@ export default function HjemPage() {
   const [profilBilde, setProfilBilde] = useState('')
   const [profilInitial, setProfilInitial] = useState('')
   const dagensKort = tips[new Date().getDate() % tips.length]
+  const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => {
@@ -111,19 +113,12 @@ export default function HjemPage() {
       setHilsen(hentHilsen(navn))
       setProfilInitial(navn ? navn[0].toUpperCase() : (user.email || 'G')[0].toUpperCase())
 
-      const { data: profil } = await supabase
-        .from('profiles')
-        .select('bilde_url, navn')
-        .eq('id', user.id)
-        .single()
+      const [{ data: profil }, { data }] = await Promise.all([
+        supabase.from('profiles').select('bilde_url, navn').eq('id', user.id).single(),
+        supabase.from('planter').select('*').eq('bruker_id', user.id).order('neste_vanning', { ascending: true })
+      ])
       if (profil?.bilde_url) setProfilBilde(profil.bilde_url)
       if (profil?.navn) setProfilInitial(profil.navn[0].toUpperCase())
-
-      const { data } = await supabase
-        .from('planter')
-        .select('*')
-        .eq('bruker_id', user.id)
-        .order('neste_vanning', { ascending: true })
       if (data) setPlanter(data)
     }
     hentData()
@@ -151,13 +146,13 @@ export default function HjemPage() {
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
         <button
-          onClick={() => window.location.href = '/varsler'}
+          onClick={() => router.push('/varsler')}
           style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', backgroundColor: '#f0ece3', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
         >
           <Bell size={18} color="#4a4a42" />
         </button>
         <button
-          onClick={() => window.location.href = '/profil'}
+          onClick={() => router.push('/profil')}
           style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', backgroundColor: '#d4e8d0', cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
         >
           {profilBilde ? (
@@ -217,7 +212,7 @@ export default function HjemPage() {
               </a>
             ))}
             <button
-              onClick={() => window.location.href = '/planter'}
+              onClick={() => router.push('/planter')}
               style={{ width: '100%', padding: '12px', borderRadius: '14px', border: 'none', backgroundColor: '#f0ece3', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#4a4a42', marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
             >
               Se alle {planter.length} planter →

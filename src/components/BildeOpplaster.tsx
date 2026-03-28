@@ -8,6 +8,24 @@ interface Props {
   eksisterendeBilde?: string
 }
 
+async function komprimer(fil: File, maksBredd = 800): Promise<Blob> {
+  return new Promise((resolve) => {
+    const img = new Image()
+    const url = URL.createObjectURL(fil)
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      const ratio = Math.min(1, maksBredd / img.width)
+      canvas.width = img.width * ratio
+      canvas.height = img.height * ratio
+      const ctx = canvas.getContext('2d')!
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+      canvas.toBlob(blob => resolve(blob!), 'image/jpeg', 0.82)
+      URL.revokeObjectURL(url)
+    }
+    img.src = url
+  })
+}
+
 export default function BildeOpplaster({ onBildeLastetOpp, eksisterendeBilde }: Props) {
   const [forhåndsvisning, setForhåndsvisning] = useState<string | null>(eksisterendeBilde || null)
   const [laster, setLaster] = useState(false)
