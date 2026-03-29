@@ -13,6 +13,7 @@ interface Melding {
 
 export default function Minneskrin() {
   const [lesteMeldinger, setLesteMeldinger] = useState<Melding[]>([])
+  const [totalMeldinger, setTotalMeldinger] = useState(0)
   const [visGalleri, setVisGalleri] = useState(false)
   const [valgtIndex, setValgtIndex] = useState<number | null>(null)
   const [laster, setLaster] = useState(true)
@@ -24,7 +25,11 @@ export default function Minneskrin() {
   async function hentLeste() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    const { data: leste } = await supabase.from('leste_meldinger').select('melding_id').eq('bruker_id', user.id)
+    const [{ data: leste }, { count }] = await Promise.all([
+      supabase.from('leste_meldinger').select('melding_id').eq('bruker_id', user.id),
+      supabase.from('daglige_meldinger').select('*', { count: 'exact', head: true })
+    ])
+    if (count) setTotalMeldinger(count)
     if (!leste || leste.length === 0) { setLaster(false); return }
     const ids = leste.map((l: any) => l.melding_id)
     const { data: meldinger } = await supabase.from('daglige_meldinger').select('*').in('id', ids).order('dato', { ascending: false })
@@ -33,7 +38,7 @@ export default function Minneskrin() {
   }
 
   function forrige() { setValgtIndex(prev => prev !== null ? Math.max(0, prev - 1) : null) }
-  function neste() { setValgtIndex(prev => prev !== null ? Math.min(lesteMeldinger.length - 1, prev + 1) : null) }
+  function neste() { setValgtIndex(prev => prev !== null ? Math.min(visData.length - 1, prev + 1) : null) }
 
   const touchStartX = { current: null as number | null }
   function håndterTouchStart(e: React.TouchEvent) { touchStartX.current = e.touches[0].clientX }
@@ -44,10 +49,36 @@ export default function Minneskrin() {
     touchStartX.current = null
   }
 
-  if (laster || lesteMeldinger.length === 0) return null
+  const plassholdere = [
+    { id: 'p1', dag_nummer: 1, dato: '2025-04-14', melding: 'Her kommer en liten melding til deg 💌', bilde_url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=400&fit=crop' },
+    { id: 'p2', dag_nummer: 2, dato: '2025-04-15', melding: 'Noe fint å lese på en tirsdag 🌸', bilde_url: 'https://images.unsplash.com/photo-1463320726281-696a3cc57e27?w=400&h=400&fit=crop' },
+    { id: 'p3', dag_nummer: 3, dato: '2025-04-16', melding: 'En liten onsdag-hilsen 🌿', bilde_url: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=400&h=400&fit=crop' },
+    { id: 'p4', dag_nummer: 4, dato: '2025-04-17', melding: 'Torsdag er undervurdert 🌱', bilde_url: 'https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?w=400&h=400&fit=crop' },
+  ]
+  const visData = lesteMeldinger.length > 0 ? lesteMeldinger : plassholdere
+  const antallLest = lesteMeldinger.length
+  const antallGjenstår = Math.max(0, totalMeldinger - antallLest)
 
-  const valgt = valgtIndex !== null ? lesteMeldinger[valgtIndex] : null
-  const visStabel = lesteMeldinger.slice(0, 4)
+  function lagLåsteKort() {
+    const låste = []
+    const base = antallLest > 0 ? new Date(lesteMeldinger[0].dato) : new Date()
+    for (let i = 1; i <= 3; i++) {
+      const d = new Date(base)
+      d.setDate(d.getDate() + i)
+      const diff = Math.ceil((d.getTime() - Date.now()) / 86400000)
+      const hint = diff <= 0 ? 'I dag' : diff === 1 ? 'I morgen' : 'Om ' + diff + ' dager'
+      låste.push({ id: 'låst-' + i, hint })
+    }
+    return låste
+  }
+  const låsteKort = lagLåsteKort()
+  const antallLåsteIRutenett = Math.max(0, 6 - visData.length)
+  const låsteIRutenett = låsteKort.slice(0, antallLåsteIRutenett)
+
+  if (laster) return null
+  if (visData.length === 0) return null
+
+  const valgt = valgtIndex !== null ? visData[valgtIndex] : null
 
   return (
     <>
@@ -68,55 +99,66 @@ export default function Minneskrin() {
               Minneskrin
             </h2>
           </div>
-<p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#c4c0b7' }}>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#c4c0b7' }}>
             Trykk for å åpne
           </p>
         </div>
 
-        {/* Polaroid-stabel */}
+        {/* Rutenett – åpnede + låste blandet */}
         <div
           onClick={() => setVisGalleri(true)}
-          style={{ position: 'relative', height: '220px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px 10px', padding: '8px 4px', cursor: 'pointer' }}
         >
-          {visStabel.map((m, i) => {
-            const rot = rotasjoner[i]
-            const offsetX = i === 0 ? 0 : i % 2 === 0 ? 12 : -12
-            const offsetY = i * 4
-            return (
-              <div
-                key={m.id}
-                style={{
-                  position: 'absolute',
-                  transform: `translateX(${offsetX}px) translateY(${offsetY}px) rotate(${i === 0 ? rot * 0.5 : rot * (i % 2 === 0 ? 1.5 : -1.5)}deg)`,
-                  backgroundColor: 'white',
-                  padding: '10px 10px 36px 10px',
-                  borderRadius: '3px',
-                  boxShadow: `0 ${4 + i * 2}px ${12 + i * 4}px rgba(0,0,0,${0.08 + i * 0.03})`,
-                  zIndex: visStabel.length - i,
-                  transition: 'transform 0.3s ease',
-                  width: '160px',
-                }}
-              >
-                {m.bilde_url ? (
-                  <div style={{ width: '100%', aspectRatio: '1/1', overflow: 'hidden' }}>
-                    <img src={m.bilde_url + '?width=200&height=200&resize=cover'} alt="Minne" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
-                  </div>
-                ) : (
-                  <div style={{ width: '100%', aspectRatio: '1/1', backgroundColor: '#fdf0ef', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px' }}>
-                    💌
-                  </div>
-                )}
-                {i === 0 && (
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', color: '#888', textAlign: 'center', position: 'absolute', bottom: '12px', left: 0, right: 0 }}>
-                    {new Date(m.dato).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short' })}
-                  </p>
-                )}
+          {visData.map((m, i) => (
+            <div key={m.id} style={{
+              backgroundColor: 'white',
+              padding: '7px 7px 28px 7px',
+              borderRadius: '3px',
+              boxShadow: '0 3px 12px rgba(0,0,0,0.1)',
+              transform: `rotate(${rotasjoner[i]}deg)`,
+              transition: 'transform 0.2s',
+              position: 'relative',
+            }}>
+              {m.bilde_url ? (
+                <div style={{ width: '100%', aspectRatio: '1/1', overflow: 'hidden' }}>
+                  <img src={m.bilde_url + '?width=200&height=200&resize=cover'} alt="Minne" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                </div>
+              ) : (
+                <div style={{ width: '100%', aspectRatio: '1/1', backgroundColor: '#fdf0ef', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px' }}>
+                  💌
+                </div>
+              )}
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', color: '#aaa', textAlign: 'center', position: 'absolute', bottom: '8px', left: 0, right: 0 }}>
+                {new Date(m.dato).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short' })}
+              </p>
+            </div>
+          ))}
+          {låsteIRutenett.map((k, i) => (
+            <div key={k.id} style={{
+              backgroundColor: 'white',
+              padding: '7px 7px 28px 7px',
+              borderRadius: '3px',
+              boxShadow: '0 3px 10px rgba(0,0,0,0.06)',
+              transform: `rotate(${rotasjoner[visData.length + i] * 0.7}deg)`,
+              opacity: 0.4,
+              position: 'relative',
+            }}>
+              <div style={{ width: '100%', aspectRatio: '1/1', backgroundColor: '#f0ece3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>
+                🔒
               </div>
-            )
-          })}
-
-
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', color: '#aaa', textAlign: 'center', position: 'absolute', bottom: '8px', left: 0, right: 0 }}>
+                {k.hint}
+              </p>
+            </div>
+          ))}
         </div>
+
+        {/* Teller */}
+        {antallGjenstår > 3 && (
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#c4c0b7', textAlign: 'center', marginTop: '16px' }}>
+            + {antallGjenstår - 3} meldinger venter på deg 🌱
+          </p>
+        )}
       </div>
 
       {/* Galleri */}
@@ -132,24 +174,18 @@ export default function Minneskrin() {
                 <X size={18} color="#4a4a42" />
               </button>
             </div>
-
-            {/* Rutenett med polaroids */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px 12px', padding: '10px' }}>
-              {lesteMeldinger.map((m, i) => (
-                <div
-                  key={m.id}
-                  onClick={() => setValgtIndex(i)}
-                  style={{
-                    backgroundColor: 'white',
-                    padding: '10px 10px 40px 10px',
-                    borderRadius: '3px',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-                    cursor: 'pointer',
-                    transform: `rotate(${rotasjoner[i]}deg)`,
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                    margin: '4px',
-                  }}
-                >
+              {visData.map((m, i) => (
+                <div key={m.id} onClick={() => setValgtIndex(i)} style={{
+                  backgroundColor: 'white',
+                  padding: '10px 10px 40px 10px',
+                  borderRadius: '3px',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  transform: `rotate(${rotasjoner[i]}deg)`,
+                  transition: 'transform 0.2s',
+                  margin: '4px',
+                }}>
                   {m.bilde_url ? (
                     <div style={{ width: '100%', aspectRatio: '1/1', overflow: 'hidden' }}>
                       <img src={m.bilde_url + '?width=200&height=200&resize=cover'} alt="Minne" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
@@ -193,7 +229,7 @@ export default function Minneskrin() {
                 <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.85)' }}>
                   {valgt.dag_nummer > 0 ? `Dag ${valgt.dag_nummer}` : ''} 💌
                 </p>
-                {valgtIndex < lesteMeldinger.length - 1 && (
+                {valgtIndex < visData.length - 1 && (
                   <button onClick={neste} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%', width: '28px', height: '28px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <ChevronRight size={14} color="white" />
                   </button>
@@ -203,7 +239,6 @@ export default function Minneskrin() {
                 <X size={14} color="white" />
               </button>
             </div>
-
             <div style={{ padding: '28px' }}>
               {valgt.bilde_url && (
                 <div style={{ backgroundColor: 'white', padding: '10px 10px 36px 10px', borderRadius: '3px', boxShadow: '0 6px 20px rgba(0,0,0,0.12)', marginBottom: '28px', transform: `rotate(${rotasjoner[valgtIndex]}deg)` }}>
