@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { Droplets, Leaf, Sun, Sparkles, Bell } from 'lucide-react'
+import { tips } from '@/lib/tips'
 import PushVarsler from '@/components/PushVarsler'
 import VærStripe from '@/components/VærStripe'
 import DagligMelding from '@/components/DagligMelding'
@@ -20,11 +21,6 @@ interface Plante {
   neste_vanning: string
   bilde_url: string
   vanning_intervall_dager: number
-}
-
-interface TipsKort {
-  type: 'tips' | 'fakta'
-  tekst: string
 }
 
 function hentNavn(epost: string): string {
@@ -148,72 +144,18 @@ function hentPersonligTittel(epost: string): string {
   ])
 }
 
-const tips: TipsKort[] = [
-  { type: 'tips', tekst: 'Stikk fingeren 2–3 cm ned i jorda før du vanner – er det fremdeles fuktig, kan du vente litt til.' },
-  { type: 'tips', tekst: 'Tørk støv av bladene jevnlig med en fuktig klut. Støvete blader fotosyntiserer dårligere.' },
-  { type: 'tips', tekst: 'La kranvann stå i en time før vanning – da fordamper klor og kalken synker til bunns.' },
-  { type: 'tips', tekst: 'De fleste stueplanter liker temperaturer mellom 18 og 24 °C og misliker kuldetrekk.' },
-  { type: 'tips', tekst: 'Vann sjeldnere om vinteren – de fleste planter har en naturlig hvileperiode fra oktober til februar.' },
-  { type: 'tips', tekst: 'Flytt planter gradvis til ny plassering – la dem stå halvdager på gammel og ny plass de første dagene.' },
-  { type: 'tips', tekst: 'Planter som strekker seg skjevt mot lyset mangler lyseksponering. Flytt dem nærmere vinduet.' },
-  { type: 'tips', tekst: 'Hell vannet direkte i jorda, ikke på bladene – vann på bladene kan gi soppvekst.' },
-  { type: 'tips', tekst: 'Gjødsl bare i vekstsesongen (mars–september). Om vinteren trenger planten hvile, ikke næring.' },
-  { type: 'tips', tekst: 'Gule blader kan bety for mye vann. Brune bladspisser tyder ofte på for lite luftfuktighet.' },
-  { type: 'tips', tekst: 'Sett planter i grupper for å øke luftfuktigheten rundt dem – plantene skaper et eget mikroklima.' },
-  { type: 'tips', tekst: 'Under de mørkeste vintermånedene kan du sette planter under kjøkkenbenken med lysrør over.' },
-  { type: 'tips', tekst: 'Pott om planten når røttene begynner å vokse ut av dreneringshullene i bunnen av potten.' },
-  { type: 'tips', tekst: 'Bruk alltid potter med dreneringshull – stillestående vann i bunnen er den vanligste årsaken til råtne røtter.' },
-  { type: 'tips', tekst: 'Beskjær gullranke og pothos om våren for å stimulere til frodig og tett ny vekst.' },
-  { type: 'tips', tekst: 'Sjekk undersiden av bladene jevnlig – skadedyr som spinnmidd og bladlus gjemmer seg gjerne der.' },
-  { type: 'tips', tekst: 'Neemolje blandet med vann er et effektivt og naturlig middel mot de fleste vanlige skadedyr på stueplanter.' },
-  { type: 'tips', tekst: 'En ny plante bør få stå i ro noen uker før du begynner å flytte og styre med den – la den tilpasse seg.' },
-  { type: 'tips', tekst: 'Kaktuser og sukkulenter tåler uttørking langt bedre enn overvanning. Tørr jord er sjelden et problem for dem.' },
-  { type: 'tips', tekst: 'Legg et lag med leca-kuler i bunnen av potten for bedre drenering og luftig rotmiljø.' },
-  { type: 'tips', tekst: 'Orkidéen bør ha om lag ett eggeglass med vann i uka – og aldri stå med røttene i stillestående vann.' },
-  { type: 'tips', tekst: 'En plante som plutselig mister mange blader kan ha fått sjokk av kulde, trekk eller brå lysendring.' },
-  { type: 'tips', tekst: 'Vårens første solstråler er kraftigere enn vinterlyset – flytt lysskye planter litt vekk fra vinduet i mars–april.' },
-  { type: 'tips', tekst: 'Klipp av visne blomster raskt – da bruker planten energien på ny blomstring fremfor frøproduksjon.' },
-  { type: 'tips', tekst: 'Regelmessig gjødsling gir planten næring til å leve i mange år. Uten gjødsel tømmes jorda for næring over tid.' },
-  { type: 'fakta', tekst: 'Monstera deliciosa er opprinnelig fra regnskogene i Mellom-Amerika og kan i naturen bli opptil 20 meter høy.' },
-  { type: 'fakta', tekst: 'Svigermors tunge (Sansevieria) er en av få planter som produserer oksygen også om natten – perfekt på soverommet.' },
-  { type: 'fakta', tekst: 'Orkidéfamilien er en av verdens største plantefamilier med nesten 25 000 kjente arter.' },
-  { type: 'fakta', tekst: 'Gullranke (Epipremnum aureum) er oppført på WHOs liste over planter som renser inneluften for giftige stoffer.' },
-  { type: 'fakta', tekst: 'Aloe vera har vært brukt medisinsk i over 6 000 år – de eldste kjente avbildningene er fra Egypt.' },
-  { type: 'fakta', tekst: 'Bergfrue ble kåret til Norges nasjonalplante i 1935, og deler tittelen med røsslyng etter en radiokåring i 1976.' },
-  { type: 'fakta', tekst: 'Hoya, også kalt voksblomst, kan leve i over 30 år med godt stell og produserer nektar med en søt duft.' },
-  { type: 'fakta', tekst: 'Fiken (Ficus) var blant de første plantene mennesket dyrket – funn tyder på kultivering for over 11 000 år siden.' },
-  { type: 'fakta', tekst: 'Aglaonema kalles på norsk «sjømannstrøst» fordi den trives godt i lite lys – selv under dekk på skip.' },
-  { type: 'fakta', tekst: 'Planters røtter kommuniserer med hverandre gjennom sopptråder i jorda – dette nettverket kalles «skogens internett».' },
-  { type: 'fakta', tekst: 'Norge har knapt 2 000 ville frøplante-arter, mens det på verdensbasis finnes over 350 000 kjente plantearter.' },
-  { type: 'fakta', tekst: 'Issoleien er den høyest voksende blomsterplanten i Norge – den er funnet på Galdhøpiggen i 2 370 meters høyde.' },
-  { type: 'fakta', tekst: 'Kaktuser lagrer vann i stilken, ikke i tornene. Tornene er egentlig omdannede blader som reduserer vanntap.' },
-  { type: 'fakta', tekst: 'Gregor Mendel oppdaget arvelæren gjennom studier av bønner – ikke gjennom dyreforsøk, slik mange tror.' },
-  { type: 'fakta', tekst: 'Fredskallen (Spathiphyllum) er kjent for å «henge med hodet» når den tørster – og reiser seg raskt igjen etter vanning.' },
-  { type: 'fakta', tekst: 'Kongsbregna har holdt seg nesten uforandret i over 180 millioner år – den er en av jordens eldste planter.' },
-  { type: 'fakta', tekst: 'Gran innvandret til Norge fra øst og er fortsatt i spredning mot vest – den har ennå ikke nådd sin klimatiske vestgrense.' },
-  { type: 'fakta', tekst: 'Pothos er nesten umulig å drepe – den kan overleve i lite lys, glemt vanning og til og med i vann uten jord.' },
-  { type: 'fakta', tekst: 'Lavendel er opprinnelig fra Middelhavsområdet, men trives overraskende godt i norske hager på solrike og godt drenerte steder.' },
-  { type: 'fakta', tekst: 'Planter kan høre – forskning viser at enkelte planter reagerer på lyden av beitende insekter og styrker forsvaret sitt.' },
-  { type: 'fakta', tekst: 'Hvitveis (Anemone nemorosa) er en av vårens første blomster i norsk natur og sprer seg sakte – bare noen centimeter i året.' },
-  { type: 'fakta', tekst: 'Botanikkens grunnlegger regnes som den greske filosofen Theofrastos, som beskrev over 500 plantearter rundt 300 f.Kr.' },
-  { type: 'fakta', tekst: 'Laven Altissima finnes ikke noe annet sted i verden enn på toppen av Galdhøpiggen.' },
-  { type: 'fakta', tekst: 'Sukkulenter lagrer vann i bladene sine og er tilpasset tørre strøk – derfor bør de vernes mot for mye regn og overvanning.' },
-  { type: 'fakta', tekst: 'Orkidéen kan blomstre opp igjen etter at blomstene har visnet – klipp stilken over et knutepunkt og vent tålmodig.' },
-]
-
 export default function HjemPage() {
   const [planter, setPlanter] = useState<Plante[]>([])
-  const [visAllePlanter, setVisAllePlanter] = useState(false)
   const [laster, setLaster] = useState(true)
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => { setMounted(true); setDagensKort(tips[new Date().getDate() % tips.length]) }, [])
   const [hilsen, setHilsen] = useState('')
   const [brukerEpost, setBrukerEpost] = useState('')
   const [tittel, setTittel] = useState('Plantene dine')
   const [profilBilde, setProfilBilde] = useState('')
   const [profilInitial, setProfilInitial] = useState('')
-  const dagensKort = tips[new Date().getDate() % tips.length]
+  const [dagensKort, setDagensKort] = useState<typeof tips[0] | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
@@ -318,7 +260,7 @@ export default function HjemPage() {
 
       <div>
         <h2 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '22px', fontWeight: 700, color: '#1c1c18', marginBottom: '16px', letterSpacing: '-0.01em' }}>
-          {visAllePlanter ? 'Alle planter' : 'Trenger vann snart'}
+          {'Trenger vann snart'}
         </h2>
 
         {planter.length === 0 ? (
@@ -331,7 +273,7 @@ export default function HjemPage() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {(visAllePlanter ? planter : planter.slice(0, 5)).map((plante) => (
+            {planter.slice(0, 5).map((plante) => (
               <a key={plante.id} href={'/planter/' + plante.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '16px', padding: '16px', backgroundColor: '#f0ece3', textDecoration: 'none' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '14px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
