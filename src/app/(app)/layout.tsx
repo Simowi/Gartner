@@ -22,15 +22,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   const pathname = usePathname()
-  const [navMounted, setNavMounted] = useState(false)
-  useEffect(() => setNavMounted(true), [])
 
   const nav = [
     { href: '/hjem', icon: Home, label: 'Hjem' },
     { href: '/planter', icon: Leaf, label: 'Planter' },
     { href: '/kalender', icon: CalendarDays, label: 'Kalender' },
   ]
-  // Handlingsknapp flyttes til høyre
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#fcf9f2' }}>
@@ -41,8 +38,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50, padding: '0 24px 24px 24px' }}>
         <div style={{
           maxWidth: '640px',
-          opacity: navMounted ? 1 : 0,
-          opacity: navMounted ? 1 : 0,
           margin: '0 auto',
           display: 'flex',
           justifyContent: 'space-around',
@@ -54,18 +49,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           WebkitBackdropFilter: 'blur(24px)',
           boxShadow: '0 8px 32px rgba(28, 28, 24, 0.08), 0 0 0 1px rgba(196, 192, 183, 0.3)',
         }}>
-          {/* Hjem, Planter og Kalender */}
-          {nav.slice(0, 3).map(({ href, icon: Icon, label }) => {
+          {nav.map(({ href, icon: Icon, label }) => {
             const active = pathname === href
             return (
-              <Link key={href} href={href} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', textDecoration: 'none', opacity: active ? 1 : 0.4, transition: 'opacity 0.2s' }}>
+              <Link key={href} href={href} style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center',
+                gap: '4px', textDecoration: 'none',
+                opacity: active ? 1 : 0.4, transition: 'opacity 0.2s',
+              }}>
                 <Icon size={22} color={active ? '#154212' : '#1c1c18'} strokeWidth={active ? 2.2 : 1.8} />
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 500, color: active ? '#154212' : '#1c1c18' }}>{label}</span>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 500, color: active ? '#154212' : '#1c1c18' }}>
+                  {label}
+                </span>
               </Link>
             )
           })}
 
-          {/* Handlingsknapp i midten */}
+          {/* Handlingsknapp */}
           <div style={{ position: 'relative' }}>
             {visMeny && (
               <>
@@ -91,17 +91,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
             </button>
           </div>
-
-          {/* Fjernet – kalender er nå del av hovedlisten */}
-          {[].map(({ href, icon: Icon, label }) => {
-            const active = pathname === href
-            return (
-              <Link key={href} href={href} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', textDecoration: 'none', opacity: active ? 1 : 0.4, transition: 'opacity 0.2s' }}>
-                <Icon size={22} color={active ? '#154212' : '#1c1c18'} strokeWidth={active ? 2.2 : 1.8} />
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 500, color: active ? '#154212' : '#1c1c18' }}>{label}</span>
-              </Link>
-            )
-          })}
         </div>
       </nav>
     </div>

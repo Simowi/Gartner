@@ -130,7 +130,7 @@ export default function PlanteProfil() {
 
       {/* Tilbake-knapp og rediger */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <button onClick={() => router.back()} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', padding: '0', fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42' }}>
+        <button onClick={() => router.push('/hjem')} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', padding: '0', fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42' }}>
           <ArrowLeft size={16} /> Tilbake
         </button>
         <button onClick={() => router.push('/planter/' + params.id + '/rediger')} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', border: 'none', backgroundColor: '#f0ece3', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#1c1c18' }}>
