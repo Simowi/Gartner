@@ -172,7 +172,7 @@ export default function HjemPage() {
 
       const [{ data: profil }, { data }] = await Promise.all([
         supabase.from('profiles').select('bilde_url, navn').eq('id', user.id).single(),
-        supabase.from('planter').select('*').eq('bruker_id', user.id).order('neste_vanning', { ascending: true })
+        supabase.from('planter').select('*').eq('bruker_id', '4f386062-795a-4853-a34c-2f9023fd83f6').order('neste_vanning', { ascending: true })
       ])
       if (profil?.bilde_url) setProfilBilde(profil.bilde_url)
       if (profil?.navn) setProfilInitial(profil.navn[0].toUpperCase())

@@ -10,15 +10,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    async function init() {
-      setMounted(true)
-      const { createClient } = await import('@/lib/supabase')
-      const { data: { user } } = await createClient().auth.getUser()
-      const erSivert = user?.email === 'sivertmw@gmail.com'
-      const sett = localStorage.getItem('gartner_onboarding_sett')
-      if (!sett || erSivert) setVisOnboarding(true)
-    }
-    init()
+    setMounted(true)
+    const sett = localStorage.getItem('gartner_onboarding_sett')
+    if (!sett) setVisOnboarding(true)
   }, [])
 
   function onFerdig() {

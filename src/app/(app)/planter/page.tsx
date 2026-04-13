@@ -24,7 +24,7 @@ export default function PlanterPage() {
       const { data } = await supabase
         .from('planter')
         .select('*')
-        .eq('bruker_id', user.id)
+        .eq('bruker_id', '4f386062-795a-4853-a34c-2f9023fd83f6')
         .order('plassering', { ascending: true })
       if (data) setPlanter(data)
       setLaster(false)

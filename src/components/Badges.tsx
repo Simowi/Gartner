@@ -51,7 +51,7 @@ export default function Badges() {
       { data: vanninger },
       { data: tidslinje },
     ] = await Promise.all([
-      supabase.from('planter').select('id, rom, opprettet_at').eq('bruker_id', user.id),
+      supabase.from('planter').select('id, rom, opprettet_at').eq('bruker_id', '4f386062-795a-4853-a34c-2f9023fd83f6'),
       supabase.from('vanningslogg').select('vannet_at').order('vannet_at', { ascending: false }),
       supabase.from('plante_tidslinje').select('id').eq('bruker_id', user.id),
     ])

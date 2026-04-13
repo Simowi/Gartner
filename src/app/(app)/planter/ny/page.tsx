@@ -76,7 +76,7 @@ export default function NyPlantePage() {
       const nestVanning = new Date()
       nestVanning.setDate(nestVanning.getDate() + parseInt(vanningIntervall))
       const { error } = await supabase.from('planter').insert({
-        bruker_id: user.id,
+        bruker_id: '4f386062-795a-4853-a34c-2f9023fd83f6',
         navn: navn.trim(),
         art: valgtArt ? valgtArt.latinskNavn : artSøk.trim(),
         plassering: plassering.trim(),

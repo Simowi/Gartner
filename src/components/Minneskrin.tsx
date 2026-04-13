@@ -11,6 +11,11 @@ interface Melding {
   bilde_url: string | null
 }
 
+interface LåstKort {
+  id: string
+  hint: string
+}
+
 export default function Minneskrin() {
   const [lesteMeldinger, setLesteMeldinger] = useState<Melding[]>([])
   const [totalMeldinger, setTotalMeldinger] = useState(0)
@@ -38,7 +43,7 @@ export default function Minneskrin() {
   }
 
   function forrige() { setValgtIndex(prev => prev !== null ? Math.max(0, prev - 1) : null) }
-  function neste() { setValgtIndex(prev => prev !== null ? Math.min(visData.length - 1, prev + 1) : null) }
+  function neste() { setValgtIndex(prev => prev !== null ? Math.min(lesteMeldinger.length - 1, prev + 1) : null) }
 
   const touchStartX = { current: null as number | null }
   function håndterTouchStart(e: React.TouchEvent) { touchStartX.current = e.touches[0].clientX }
@@ -49,36 +54,30 @@ export default function Minneskrin() {
     touchStartX.current = null
   }
 
-  const plassholdere = [
-    { id: 'p1', dag_nummer: 1, dato: '2025-04-14', melding: 'Her kommer en liten melding til deg 💌', bilde_url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=400&fit=crop' },
-    { id: 'p2', dag_nummer: 2, dato: '2025-04-15', melding: 'Noe fint å lese på en tirsdag 🌸', bilde_url: 'https://images.unsplash.com/photo-1463320726281-696a3cc57e27?w=400&h=400&fit=crop' },
-    { id: 'p3', dag_nummer: 3, dato: '2025-04-16', melding: 'En liten onsdag-hilsen 🌿', bilde_url: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=400&h=400&fit=crop' },
-    { id: 'p4', dag_nummer: 4, dato: '2025-04-17', melding: 'Torsdag er undervurdert 🌱', bilde_url: 'https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?w=400&h=400&fit=crop' },
-  ]
-  const visData = lesteMeldinger.length > 0 ? lesteMeldinger : plassholdere
-  const antallLest = lesteMeldinger.length
-  const antallGjenstår = Math.max(0, totalMeldinger - antallLest)
+  const visData = lesteMeldinger
 
-  function lagLåsteKort() {
-    const låste = []
-    const base = antallLest > 0 ? new Date(lesteMeldinger[0].dato) : new Date()
-    for (let i = 1; i <= 3; i++) {
+  // Lag låste kort basert på dato etter siste leste
+  function lagLåsteKort(antall: number): LåstKort[] {
+    const låste: LåstKort[] = []
+    const base = lesteMeldinger.length > 0 ? new Date(lesteMeldinger[0].dato) : new Date()
+    for (let i = 1; i <= antall; i++) {
       const d = new Date(base)
       d.setDate(d.getDate() + i)
       const diff = Math.ceil((d.getTime() - Date.now()) / 86400000)
-      const hint = diff <= 0 ? 'I dag' : diff === 1 ? 'I morgen' : 'Om ' + diff + ' dager'
-      låste.push({ id: 'låst-' + i, hint })
+      const hint = diff <= 0 ? 'I dag' : diff === 1 ? 'I morgen' : `Om ${diff} dager`
+      låste.push({ id: `låst-${i}`, hint })
     }
     return låste
   }
-  const låsteKort = lagLåsteKort()
-  const antallLåsteIRutenett = Math.max(0, 6 - visData.length)
-  const låsteIRutenett = låsteKort.slice(0, antallLåsteIRutenett)
+
+  // Alltid vis 6 kort + 1 halvt synlig (7 totalt)
+  const antallLåste = 2
+  const låsteKort = lagLåsteKort(antallLåste)
 
   if (laster) return null
-  if (visData.length === 0) return null
+  if (lesteMeldinger.length === 0) return null
 
-  const valgt = valgtIndex !== null ? visData[valgtIndex] : null
+  const valgt = valgtIndex !== null ? lesteMeldinger[valgtIndex] : null
 
   return (
     <>
@@ -104,61 +103,67 @@ export default function Minneskrin() {
           </p>
         </div>
 
-        {/* Rutenett – åpnede + låste blandet */}
-        <div
-          onClick={() => setVisGalleri(true)}
-          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px 10px', padding: '8px 4px', cursor: 'pointer' }}
-        >
-          {visData.map((m, i) => (
-            <div key={m.id} style={{
-              backgroundColor: 'white',
-              padding: '7px 7px 28px 7px',
-              borderRadius: '3px',
-              boxShadow: '0 3px 12px rgba(0,0,0,0.1)',
-              transform: `rotate(${rotasjoner[i]}deg)`,
-              transition: 'transform 0.2s',
-              position: 'relative',
-            }}>
-              {m.bilde_url ? (
-                <div style={{ width: '100%', aspectRatio: '1/1', overflow: 'hidden' }}>
-                  <img src={m.bilde_url + '?width=200&height=200&resize=cover'} alt="Minne" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+        {/* To rader med 3 kort, siste stikker ut til høyre */}
+        <div style={{ position: 'relative' }}>
+          <div style={{ overflow: 'hidden' }}>
+            <div
+              onClick={() => setVisGalleri(true)}
+              style={{ display: 'grid', gridTemplateColumns: 'repeat(3, calc(33% + 6px))', gap: '16px 10px', padding: '8px 4px', cursor: 'pointer', width: 'calc(100% + 48px)' }}
+            >
+              {/* Åpnede polaroids */}
+              {visData.map((m, i) => (
+                <div key={m.id} style={{
+                  backgroundColor: 'white',
+                  padding: '7px 7px 28px 7px',
+                  borderRadius: '3px',
+                  boxShadow: '0 3px 12px rgba(0,0,0,0.1)',
+                  transform: `rotate(${rotasjoner[i]}deg)`,
+                  position: 'relative',
+                }}>
+                  {m.bilde_url ? (
+                    <div style={{ width: '100%', aspectRatio: '1/1', overflow: 'hidden' }}>
+                      <img src={m.bilde_url + '?width=200&height=200&resize=cover'} alt="Minne" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                    </div>
+                  ) : (
+                    <div style={{ width: '100%', aspectRatio: '1/1', backgroundColor: '#fdf0ef', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px' }}>
+                      💌
+                    </div>
+                  )}
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', color: '#aaa', textAlign: 'center', position: 'absolute', bottom: '8px', left: 0, right: 0 }}>
+                    {new Date(m.dato).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short' })}
+                  </p>
                 </div>
-              ) : (
-                <div style={{ width: '100%', aspectRatio: '1/1', backgroundColor: '#fdf0ef', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px' }}>
-                  💌
-                </div>
-              )}
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', color: '#aaa', textAlign: 'center', position: 'absolute', bottom: '8px', left: 0, right: 0 }}>
-                {new Date(m.dato).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short' })}
-              </p>
-            </div>
-          ))}
-          {låsteIRutenett.map((k, i) => (
-            <div key={k.id} style={{
-              backgroundColor: 'white',
-              padding: '7px 7px 28px 7px',
-              borderRadius: '3px',
-              boxShadow: '0 3px 10px rgba(0,0,0,0.06)',
-              transform: `rotate(${rotasjoner[visData.length + i] * 0.7}deg)`,
-              opacity: 0.4,
-              position: 'relative',
-            }}>
-              <div style={{ width: '100%', aspectRatio: '1/1', backgroundColor: '#f0ece3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>
-                🔒
-              </div>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', color: '#aaa', textAlign: 'center', position: 'absolute', bottom: '8px', left: 0, right: 0 }}>
-                {k.hint}
-              </p>
-            </div>
-          ))}
-        </div>
+              ))}
 
-        {/* Teller */}
-        {antallGjenstår > 3 && (
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#c4c0b7', textAlign: 'center', marginTop: '16px' }}>
-            + {antallGjenstår - 3} meldinger venter på deg 🌱
-          </p>
-        )}
+              {/* Låste polaroids */}
+              {låsteKort.map((k, i) => (
+                <div key={k.id} style={{
+                  backgroundColor: 'white',
+                  padding: '7px 7px 28px 7px',
+                  borderRadius: '3px',
+                  boxShadow: '0 3px 10px rgba(0,0,0,0.06)',
+                  transform: `rotate(${rotasjoner[visData.length + i] * 0.7}deg)`,
+                  opacity: 0.4,
+                  position: 'relative',
+                }}>
+                  <div style={{ width: '100%', aspectRatio: '1/1', backgroundColor: '#f0ece3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>
+                    🔒
+                  </div>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', color: '#aaa', textAlign: 'center', position: 'absolute', bottom: '8px', left: 0, right: 0 }}>
+                    {k.hint}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Gradient fade til høyre */}
+          <div style={{
+            position: 'absolute', top: 0, right: 0, bottom: 0, width: '60px',
+            background: 'linear-gradient(to right, transparent, #fcf9f2)',
+            pointerEvents: 'none',
+          }} />
+        </div>
       </div>
 
       {/* Galleri */}
@@ -175,7 +180,7 @@ export default function Minneskrin() {
               </button>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px 12px', padding: '10px' }}>
-              {visData.map((m, i) => (
+              {lesteMeldinger.map((m, i) => (
                 <div key={m.id} onClick={() => setValgtIndex(i)} style={{
                   backgroundColor: 'white',
                   padding: '10px 10px 40px 10px',
@@ -183,7 +188,6 @@ export default function Minneskrin() {
                   boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
                   cursor: 'pointer',
                   transform: `rotate(${rotasjoner[i]}deg)`,
-                  transition: 'transform 0.2s',
                   margin: '4px',
                 }}>
                   {m.bilde_url ? (
@@ -229,7 +233,7 @@ export default function Minneskrin() {
                 <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.85)' }}>
                   {valgt.dag_nummer > 0 ? `Dag ${valgt.dag_nummer}` : ''} 💌
                 </p>
-                {valgtIndex < visData.length - 1 && (
+                {valgtIndex < lesteMeldinger.length - 1 && (
                   <button onClick={neste} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%', width: '28px', height: '28px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <ChevronRight size={14} color="white" />
                   </button>
