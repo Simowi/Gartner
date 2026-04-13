@@ -182,6 +182,35 @@ export default function HjemPage() {
     hentData()
   }, [])
 
+  const [vannetPlanter, setVannetPlanter] = useState<Set<string>>(new Set())
+  const [fjernPlanter, setFjernPlanter] = useState<Set<string>>(new Set())
+
+  async function vannPlante(e: React.MouseEvent, planteId: string, intervall: number) {
+    e.preventDefault()
+    e.stopPropagation()
+    const nå = new Date()
+    const nestVanning = new Date()
+    nestVanning.setDate(nestVanning.getDate() + intervall)
+    await supabase.from('planter').update({
+      sist_vannet: nå.toISOString(),
+      neste_vanning: nestVanning.toISOString(),
+    }).eq('id', planteId)
+    await supabase.from('vanningslogg').insert({
+      plante_id: planteId,
+      bruker_id: '4f386062-795a-4853-a34c-2f9023fd83f6',
+      vannet_at: nå.toISOString(),
+    })
+    setVannetPlanter(prev => new Set([...prev, planteId]))
+    setPlanter(prev => prev.map(p => p.id === planteId ? {
+      ...p,
+      sist_vannet: nå.toISOString(),
+      neste_vanning: nestVanning.toISOString(),
+    } : p))
+    setTimeout(() => {
+      setFjernPlanter(prev => new Set([...prev, planteId]))
+    }, 1000)
+  }
+
   const dagTilVanning = (dato: string) => {
     if (!dato) return null
     const diff = Math.ceil((new Date(dato).getTime() - Date.now()) / 86400000)
@@ -273,8 +302,8 @@ export default function HjemPage() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {planter.slice(0, 5).map((plante) => (
-              <a key={plante.id} href={'/planter/' + plante.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '16px', padding: '16px', backgroundColor: '#f0ece3', textDecoration: 'none' }}>
+            {planter.filter(p => !fjernPlanter.has(p.id)).slice(0, 5).map((plante) => (
+              <div key={plante.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '16px', padding: '16px', backgroundColor: '#f0ece3', cursor: 'pointer', position: 'relative', animation: vannetPlanter.has(plante.id) && !fjernPlanter.has(plante.id) ? 'none' : fjernPlanter.has(plante.id) ? 'gli-ut 0.5s ease-in forwards' : 'none', overflow: 'hidden' }} onClick={() => !vannetPlanter.has(plante.id) && router.push('/planter/' + plante.id)}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '14px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
                     {plante.bilde_url ? (
@@ -292,13 +321,31 @@ export default function HjemPage() {
                     </p>
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Droplets size={14} color="#4a7c59" />
-                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 500, color: '#4a7c59' }}>
-                    {dagTilVanning(plante.neste_vanning) ?? '–'}
-                  </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {!vannetPlanter.has(plante.id) && (
+                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#4a7c59' }}>
+                      {dagTilVanning(plante.neste_vanning) ?? '–'}
+                    </span>
+                  )}
+                  <button
+                    onClick={(e) => vannPlante(e, plante.id, plante.vanning_intervall_dager)}
+                    disabled={vannetPlanter.has(plante.id)}
+                    style={{
+                      width: '32px', height: '32px', borderRadius: '50%', border: 'none',
+                      backgroundColor: vannetPlanter.has(plante.id) ? '#154212' : '#d4e8d0',
+                      cursor: vannetPlanter.has(plante.id) ? 'default' : 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0, transition: 'all 0.3s ease',
+                      transform: vannetPlanter.has(plante.id) ? 'scale(1.1)' : 'scale(1)',
+                    }}
+                  >
+                    {vannetPlanter.has(plante.id)
+                      ? <span style={{ fontSize: '14px', color: 'white', fontWeight: 700 }}>✓</span>
+                      : <Droplets size={14} color="#154212" />
+                    }
+                  </button>
                 </div>
-              </a>
+              </div>
             ))}
             <button
               onClick={() => router.push('/planter')}
