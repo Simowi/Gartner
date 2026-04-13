@@ -28,7 +28,7 @@ export default function DagligMelding() {
     const { data: { user: u } } = await supabase.auth.getUser()
     if (!u) return
 
-const iDag = new Date().toISOString().split('T')[0]
+const iMorgen = new Date(); iMorgen.setDate(iMorgen.getDate() + 1); const iDag = iMorgen.toISOString().split('T')[0]
     const [{ data: msgs }, { data: leste }] = await Promise.all([
       supabase.from('daglige_meldinger').select('*').lte('dato', iDag).order('dato', { ascending: true }),
       supabase.from('leste_meldinger').select('melding_id').eq('bruker_id', u.id)
