@@ -3514,7 +3514,7 @@ export const planteArtDatabase: PlanteArt[] = [
   {
     id: 'alchemilla-mollis',
     norskNavn: 'Marikåpe',
-    engelskNavn: 'Lady's Mantle',
+    engelskNavn: 'Ladys Mantle',
     latinskNavn: 'Alchemilla mollis',
     familie: 'Rosefamilien (Rosaceae)',
     opprinnelse: 'Europa og Asia',
@@ -3534,7 +3534,7 @@ export const planteArtDatabase: PlanteArt[] = [
   {
     id: 'polygonatum-multiflorum',
     norskNavn: 'Kusymre',
-    engelskNavn: 'Solomon's Seal',
+    engelskNavn: 'Solomons Seal',
     latinskNavn: 'Polygonatum multiflorum',
     familie: 'Aspargesfamilien (Asparagaceae)',
     opprinnelse: 'Europa og Asia',
@@ -4014,7 +4014,7 @@ export const planteArtDatabase: PlanteArt[] = [
   {
     id: 'gypsophila-paniculata',
     norskNavn: 'Brudeslør',
-    engelskNavn: 'Baby's Breath',
+    engelskNavn: 'Babys Breath',
     latinskNavn: 'Gypsophila paniculata',
     familie: 'Nellikfamilien (Caryophyllaceae)',
     opprinnelse: 'Europa og Asia',
@@ -4094,7 +4094,7 @@ export const planteArtDatabase: PlanteArt[] = [
   {
     id: 'stachys-byzantina',
     norskNavn: 'Ull-lammets øre',
-    engelskNavn: 'Lamb's Ear',
+    engelskNavn: 'Lambs Ear',
     latinskNavn: 'Stachys byzantina',
     familie: 'Leppeblomstfamilien (Lamiaceae)',
     opprinnelse: 'Tyrkia og Iran',
@@ -4534,7 +4534,7 @@ export const planteArtDatabase: PlanteArt[] = [
   {
     id: 'sedum-morganianum',
     norskNavn: 'Aperumpe',
-    engelskNavn: 'Burro\'s Tail',
+    engelskNavn: 'Burro\s Tail',
     latinskNavn: 'Sedum morganianum',
     familie: 'Bergknappfamilien (Crassulaceae)',
     opprinnelse: 'Mexico',
@@ -4954,7 +4954,7 @@ export const planteArtDatabase: PlanteArt[] = [
   {
     id: 'ammi-majus',
     norskNavn: 'Stor kongsurt',
-    engelskNavn: 'Bishop\'s Weed',
+    engelskNavn: 'Bishop\s Weed',
     latinskNavn: 'Ammi majus',
     familie: 'Skjermplantefamilien (Apiaceae)',
     opprinnelse: 'Middelhavsområdet',
