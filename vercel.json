@@ -3,6 +3,10 @@
     {
       "path": "/api/vaervarsler",
       "schedule": "0 18 * * *"
+    },
+    {
+      "path": "/api/dagligvarsel",
+      "schedule": "0 8 * * *"
     }
   ]
 }
