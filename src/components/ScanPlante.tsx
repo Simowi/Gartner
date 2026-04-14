@@ -23,10 +23,33 @@ export default function ScanPlante({ onArtValgt }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   function finnArtIDatabase(latinskNavn: string) {
-    const lower = latinskNavn.toLowerCase()
-    return planteArtDatabase.find(p =>
+    const lower = latinskNavn.toLowerCase().trim()
+    // 1. Eksakt match på latinsk navn
+    const eksakt = planteArtDatabase.find(p => p.latinskNavn.toLowerCase() === lower)
+    if (eksakt) return eksakt
+    // 2. Match på aliaser
+    const aliasMatch = planteArtDatabase.find(p =>
+      p.aliaser?.some(a => a.toLowerCase() === lower) ||
+      p.aliaser?.some(a => lower.includes(a.toLowerCase())) ||
+      p.aliaser?.some(a => a.toLowerCase().includes(lower))
+    )
+    if (aliasMatch) return aliasMatch
+    // 3. Latinsk navn inkluderer søket eller omvendt
+    const delMatch = planteArtDatabase.find(p =>
       p.latinskNavn.toLowerCase().includes(lower) ||
-      lower.includes(p.latinskNavn.toLowerCase().split(' ')[0])
+      lower.includes(p.latinskNavn.toLowerCase())
+    )
+    if (delMatch) return delMatch
+    // 4. Match på første to ord av latinsk navn (slekt + art)
+    const toOrd = lower.split(' ').slice(0, 2).join(' ')
+    const toOrdMatch = planteArtDatabase.find(p =>
+      p.latinskNavn.toLowerCase().startsWith(toOrd)
+    )
+    if (toOrdMatch) return toOrdMatch
+    // 5. Match kun på slektsnavn (første ord)
+    const slekt = lower.split(' ')[0]
+    return planteArtDatabase.find(p =>
+      p.latinskNavn.toLowerCase().split(' ')[0] === slekt
     ) || null
   }
 
