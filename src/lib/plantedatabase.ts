@@ -17,6 +17,7 @@ export interface PlanteArt {
   stell: string[]
   tags: string[]
   aliaser?: string[]
+  sorter?: string[]
 }
 
 export const planteArtDatabase: PlanteArt[] = [
@@ -964,6 +965,7 @@ export const planteArtDatabase: PlanteArt[] = [
     maksHøydeCm: 120,
     fakta: ['Det finnes over 57 000 registrerte dahliavarianter på verdensbasis.', 'Dahlia er Mexicos nasjonalblomst.', 'Knollene er spiselige og ble opprinnelig dyrket som mat av aztekerne.', 'Dahliaer blomstrer fra juli til første frost.'],
     stell: ['Plant knollen når frostfaren er over, vanligvis mai i Sør-Norge.', 'Vann jevnlig ved rotsonen, unngå vann på bladene.', 'Klyp av visne blomster for kontinuerlig blomstring.', 'Ta opp knollene om høsten og oppbevar frostfritt til neste vår.'],
+    sorter: ['Café au Lait','Bishop of Llandaff','Labyrinth','Cornel Bronze','HS First Love','Wizard of Oz','Nuit dEte','Tyrell','Coral Crush','Dark Leaf','Jowey Mirella','Chat Noir','Marble Ball','Penhill Dark Monarch','Karma Choc','Ivanetti','Mystery Day','Totally Tangerine','Preference','Karma Sangria','Karma Naomi','Arabian Night','Thomas Edison','Eveline','White Moonlight','Hollyhill Spiderwoman','Breakout','Mystic Illusion','Happy Single First Love','Karma Prospero','Honka','Brackenhill Flame','Ferncliff Illusion','Clearview Tamara','Punky','Twyninge Revel','Crème de Cassis','Oakwood Diamond','Emory Paul','Fairway Spur','Gallery Art Deco','Bashful','Yellow Hammer','Weston Spanish Dancer','Gitts Attention','Black Narcissus','Fascination','Little William','Ambition','Princess Marie Jose'],
     aliaser: ['dahlia', 'georgine', 'dahlia pinnata', 'georgina', 'dahliaer', 'kaktusdahlia', 'pompom dahlia', 'ball dahlia'],
     tags: ['blomstrende', 'hageplante', 'sommerblomst', 'fargerik'],
   },

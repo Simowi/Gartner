@@ -12,6 +12,7 @@ export default function NyPlantePage() {
   const [navn, setNavn] = useState('')
   const [artSøk, setArtSøk] = useState('')
   const [valgtArt, setValgtArt] = useState<PlanteArt | null>(null)
+  const [sort, setSort] = useState('')
   const [artForslag, setArtForslag] = useState<PlanteArt[]>([])
   const [visForslag, setVisForslag] = useState(false)
   const [plassering, setPlassering] = useState('')
@@ -79,6 +80,7 @@ export default function NyPlantePage() {
         bruker_id: '4f386062-795a-4853-a34c-2f9023fd83f6',
         navn: navn.trim(),
         art: valgtArt ? valgtArt.latinskNavn : artSøk.trim(),
+        sort: sort.trim() || null,
         plassering: plassering.trim(),
         vanning_intervall_dager: parseInt(vanningIntervall),
         sist_vannet: new Date().toISOString(),
@@ -147,8 +149,9 @@ export default function NyPlantePage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
         {/* Scan-knapp */}
-        <ScanPlante onArtValgt={async (artId, latinsk, norsk, intervall, bildeBase64) => {
+        <ScanPlante onArtValgt={async (artId, latinsk, norsk, intervall, bildeBase64, detektertSort) => {
           const funnetArt = planteArtDatabase.find(a => a.id === artId)
+          if (detektertSort) setSort(detektertSort)
           if (funnetArt) {
             setValgtArt(funnetArt)
             setArtSøk(funnetArt.norskNavn)
@@ -216,6 +219,43 @@ export default function NyPlantePage() {
               ))}
             </div>
           )}
+
+          {/* Sort-felt */}
+          <div style={{ marginTop: '8px' }}>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#4a4a42', marginBottom: '8px' }}>
+              SORT / KULTIVAR (valgfritt)
+            </p>
+            <input
+              type="text"
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              placeholder="f.eks. Café au Lait, HS First Love..."
+              style={{ width: '100%', padding: '14px 16px', borderRadius: '14px', border: '1.5px solid #e8e4db', backgroundColor: '#fdfaf3', fontFamily: 'Inter, sans-serif', fontSize: '15px', color: '#1c1c18', outline: 'none', boxSizing: 'border-box' }}
+            />
+            {valgtArt?.sorter && valgtArt.sorter.length > 0 && (
+              <div style={{ marginTop: '10px' }}>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#4a4a42', marginBottom: '8px' }}>Vanlige sorter:</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                  {valgtArt.sorter.map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setSort(s)}
+                      style={{
+                        padding: '6px 12px', borderRadius: '999px', border: '1.5px solid',
+                        borderColor: sort === s ? '#154212' : '#e8e4db',
+                        backgroundColor: sort === s ? '#d4e8d0' : 'white',
+                        fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 500,
+                        color: sort === s ? '#154212' : '#4a4a42', cursor: 'pointer'
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Valgt art-kort */}
           {valgtArt && (

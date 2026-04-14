@@ -8,10 +8,11 @@ interface Forslag {
   norskNavn: string
   sannsynlighet: number
   artId: string | null
+  sort?: string | null
 }
 
 interface Props {
-  onArtValgt: (artId: string, latinskNavn: string, norskNavn: string, vanningIntervall: number, bildeBase64: string) => void
+  onArtValgt: (artId: string, latinskNavn: string, norskNavn: string, vanningIntervall: number, bildeBase64: string, sort?: string | null) => void
 }
 
 export default function ScanPlante({ onArtValgt }: Props) {
@@ -88,11 +89,15 @@ export default function ScanPlante({ onArtValgt }: Props) {
           const norskNavn = artIDb?.norskNavn ||
             s.details?.common_names?.[0] ||
             s.name
+          // Hent ut sort fra Plant.id-navn, f.eks. "Dahlia pinnata 'Café au Lait'" → "Café au Lait"
+          const sortMatch = s.name.match(/['"'']([^'"'']+)['"'']/)
+          const sort = sortMatch ? sortMatch[1] : null
           return {
             navn: s.name,
             norskNavn,
             sannsynlighet: Math.round(s.probability * 100),
             artId: artIDb?.id || null,
+            sort,
           }
         })
 
