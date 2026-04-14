@@ -432,6 +432,7 @@ export const planteArtDatabase: PlanteArt[] = [
     maksHøydeCm: 80,
     fakta: ['Lavendel har vært brukt som medisinplante og parfyme i over 2500 år.', 'Duften fra lavendel har vist seg å ha beroligende effekt i flere studier.', 'Blomstene tiltrekker seg bier og humler.', 'Tørkede lavendelblomster brukes som naturlig møllmiddel.'],
     stell: ['Plant i svært godt drenert jord - lavendel hater å stå vått.', 'Beskjær ned til vedaktig stamme etter blomstring.', 'Trenger ikke gjødsling.', 'Dekk til om vinteren i kalde strøk av Norge.'],
+    aliaser: ['lavendel', 'lavender', 'lavandel', 'lavandula', 'lavandula angustifolia', 'lavandula vera', 'lavendelplante'],
     tags: ['hageplante', 'duftende', 'blomstrende', 'humlevennlig'],
   },
   {
@@ -883,7 +884,7 @@ export const planteArtDatabase: PlanteArt[] = [
     maksHøydeCm: 90,
     fakta: ['Perleranken lagrer vann i de kulerunde bladene.', 'Den kan bli opptil 90 cm lang og er svært dekorativ i høye hyller.', 'Blomstrer med hvite blomster som lukter av kanel og vanilje.', 'Er giftig dersom den spises.'],
     stell: ['Vann svært sparsomt - la jorda tørke helt ut mellom vanningene.', 'Trenger mye lys for å beholde den karakteristiske kulerunde formen.', 'Perlene skrumper når planten er tørst.', 'Bruk kaktus- eller sukkulentjord.'],
-    aliaser: ['perleranke', 'string of pearls', 'perleplante', 'perle ranke', 'string of beads', 'senecio', 'kulebladplante'],
+    aliaser: ['perleranke', 'string of pearls', 'perleplante', 'perle ranke', 'string of beads', 'senecio rowleyanus', 'curio rowleyanus', 'kulebladplante'],
     tags: ['sukkulente', 'hengende', 'unik', 'dekorativ', 'stueplante'],
   },
   {
@@ -1427,26 +1428,7 @@ export const planteArtDatabase: PlanteArt[] = [
     aliaser: ["dracaena fragrans","maisplante","corn plant","massangeana","dracaena massangeana","lykketreet"],
     tags: ["treformet","luftrensende","lettstelt","stueplante"],
   },
-  {
-    id: 'dracaena-trifasciata',
-    norskNavn: 'Svigermors tunge (ny)',
-    engelskNavn: 'Snake Plant',
-    latinskNavn: 'Dracaena trifasciata',
-    familie: 'Aspargesfamilien (Asparagaceae)',
-    opprinnelse: 'Vest-Afrika',
-    beskrivelse: 'Tidligere kjent som Sansevieria. Nyreklassifisert men fortsatt den samme hardføre planten med stive sverdformede blader.',
-    vanningIntervallDager: 21,
-    lysforhold: 'lite',
-    luftfuktighet: 'lav',
-    vanskelighetsgrad: 'lett',
-    giftig: true,
-    giftigForDyr: true,
-    maksHøydeCm: 120,
-    fakta: ["Reklassifisert fra Sansevieria til Dracaena i 2017.","Produserer oksygen om natten - bra på soverom.","En av de vanskeligste plantene å drepe.","Finnes i mange varianter."],
-    stell: ["Vann svært sparsomt.","Tåler nesten alt av lysforhold.","Pott om sjelden.","Den vanligste feilen er overvanning."],
-    aliaser: ["snake plant","dracaena trifasciata","sansevieria trifasciata","svigermors tunge","mother in law tongue","sansevieria","sanseveria"],
-    tags: ["tørketålende","nybegynner","soverom","stueplante"],
-  },
+
   {
     id: 'hoya-kerrii',
     norskNavn: 'Hjertehoya',
@@ -1507,26 +1489,7 @@ export const planteArtDatabase: PlanteArt[] = [
     aliaser: ["hjerteranke","string of hearts","ceropegia","chain of hearts","hjerter på tråd","rosary vine"],
     tags: ["hengende","delikat","populær","stueplante"],
   },
-  {
-    id: 'curio-rowleyanus',
-    norskNavn: 'Perleranke',
-    engelskNavn: 'String of Pearls',
-    latinskNavn: 'Curio rowleyanus',
-    familie: 'Korgplantefamilien (Asteraceae)',
-    opprinnelse: 'Sør-Afrika',
-    beskrivelse: 'Nytt navn for Senecio rowleyanus. En fascinerende sukkulentplante med kulerunde perleformede blader.',
-    vanningIntervallDager: 14,
-    lysforhold: 'mye',
-    luftfuktighet: 'lav',
-    vanskelighetsgrad: 'middels',
-    giftig: true,
-    giftigForDyr: true,
-    maksHøydeCm: 90,
-    fakta: ["Reklassifisert fra Senecio til Curio nylig.","Perlene lagrer vann.","Blomstrer med hvite blomster som lukter av kanel.","Er giftig hvis spist."],
-    stell: ["Vann svært sparsomt.","Trenger mye lys.","Bruk sukkulentjord.","Perlene skrumper når den er tørst."],
-    aliaser: ["perleranke","string of pearls","senecio rowleyanus","kulebladplante","perle ranke"],
-    tags: ["sukkulente","hengende","unik","stueplante"],
-  },
+
   {
     id: 'echeveria',
     norskNavn: 'Echeveria',
@@ -1887,26 +1850,7 @@ export const planteArtDatabase: PlanteArt[] = [
     aliaser: ["solhatt","echinacea","coneflower","solhattblomst","ekkinase"],
     tags: ["staude","medisinsk","blomstrende","norsk hage"],
   },
-  {
-    id: 'lavandula-vera',
-    norskNavn: 'Lavendel',
-    engelskNavn: 'Lavender',
-    latinskNavn: 'Lavandula angustifolia',
-    familie: 'Leppeblomstfamilien (Lamiaceae)',
-    opprinnelse: 'Middelhavsområdet',
-    beskrivelse: 'En klassisk duftende plante med lilla blomsteraks. Tåler norsk vinter på solrike og godt drenerte steder.',
-    vanningIntervallDager: 14,
-    lysforhold: 'mye',
-    luftfuktighet: 'lav',
-    vanskelighetsgrad: 'middels',
-    giftig: false,
-    giftigForDyr: false,
-    maksHøydeCm: 80,
-    fakta: ["Lavendelduft har beroligende effekt dokumentert i studier.","Blomstene tiltrekker bier og humler.","Kan brukes som naturlig møllmiddel.","Eterisk olje fra lavendel brukes i aromaterapi."],
-    stell: ["Plant i godt drenert jord i full sol.","Beskjær etter blomstring.","Trenger ikke gjødsling.","Dekk til i kalde strøk om vinteren."],
-    aliaser: ["lavendel","lavender","lavandel","lavandula","lavendelplante"],
-    tags: ["hageplante","duftende","blomstrende","humlevennlig"],
-  },
+
   {
     id: 'sedum-spectabile',
     norskNavn: 'Høstbergknapp',
@@ -3066,10 +3010,30 @@ export const planteArtDatabase: PlanteArt[] = [
     stell: ["Start innendørs i februar-mars.","Dyrk i drivhus i Norge.","Vann jevnlig.","Gjødsl med tomatgjødsel."],
     aliaser: ["aubergine","eggplant","solanum melongena","eggebær"],
     tags: ["grønnsak","drivhus","varmekjær","nyttevekst"],
-  }
+  },
+  {
+    id: 'strelitzia-nicolai',
+    norskNavn: 'Hvit paradisfuglplante',
+    engelskNavn: 'Giant White Bird of Paradise',
+    latinskNavn: 'Strelitzia nicolai',
+    familie: 'Paradisfuglfamilien (Strelitziaceae)',
+    opprinnelse: 'Sør-Afrika',
+    beskrivelse: 'En gigantisk tropisk plante med store bananliknende blader og hvite blomster med blå tunge. Kan bli 3-6 meter innendørs og er en dramatisk stueplante i store rom.',
+    vanningIntervallDager: 10,
+    lysforhold: 'mye',
+    luftfuktighet: 'middels',
+    vanskelighetsgrad: 'middels',
+    giftig: true,
+    giftigForDyr: true,
+    maksHøydeCm: 600,
+    fakta: ['Kan bli opptil 6-10 meter høy utendørs.', 'Blomstene er hvite med blå tunge - ulikt den oransje S. reginae.', 'Bladene ligner bananplantens blader og kan bli over 1 meter lange.', 'Oppkalt etter tsar Nikolai I av Russland.'],
+    stell: ['Trenger mye lys for å trives innendørs.', 'Vann moderat og la jorda tørke mellom vanningene.', 'Gi den god plass - bladene blir svært store.', 'Gjødsl jevnlig i vekstsesongen.'],
+    aliaser: ['strelitzia nicolai', 'hvit paradisfuglplante', 'giant white bird of paradise', 'giant bird of paradise', 'hvit paradisfugl', 'nicolai', 'bananblad strelitzia', 'natal wild banana', 'wild banana'],
+    tags: ['storvokst', 'dramatisk', 'tropisk', 'stueplante'],
+  },
 ]
 
-export function søkPlanteArt(søkeord: string): PlanteArt[] {
+export function søkPlanteArt(søkeord: string): (PlanteArt & { matchetAlias?: string })[] {
   if (!søkeord || søkeord.length < 2) return []
   const lower = søkeord.toLowerCase().trim()
   return planteArtDatabase.filter(p =>
@@ -3079,5 +3043,12 @@ export function søkPlanteArt(søkeord: string): PlanteArt[] {
     (p.engelskNavn && p.engelskNavn.toLowerCase().includes(lower)) ||
     p.tags.some(t => t.toLowerCase().includes(lower)) ||
     (p.aliaser && p.aliaser.some(a => a.toLowerCase().includes(lower)))
-  ).slice(0, 8)
+  ).slice(0, 8).map(p => {
+    const matchetAlias = p.aliaser?.find(a => a.toLowerCase().includes(lower))
+    const visAlias = matchetAlias &&
+      !p.norskNavn.toLowerCase().includes(lower) &&
+      !p.latinskNavn.toLowerCase().includes(lower) &&
+      !(p.engelskNavn && p.engelskNavn.toLowerCase().includes(lower))
+    return { ...p, matchetAlias: visAlias ? matchetAlias : undefined }
+  })
 }
