@@ -148,8 +148,28 @@ export default function HjemPage() {
   const [planter, setPlanter] = useState<Plante[]>([])
   const [laster, setLaster] = useState(true)
   const [mounted, setMounted] = useState(false)
+  const [visPlanteTips, setVisPlanteTips] = useState(false)
+  const [vannetPlanter, setVannetPlanter] = useState<Set<string>>(new Set())
+  const [fjernPlanter, setFjernPlanter] = useState<Set<string>>(new Set())
 
-  useEffect(() => { setMounted(true); setDagensKort(tips[new Date().getDate() % tips.length]) }, [])
+  useEffect(() => {
+    setMounted(true)
+    setDagensKort(tips[new Date().getDate() % tips.length])
+    const key = 'plante_tips_vist'
+    const data = localStorage.getItem(key)
+    const na = Date.now()
+    if (!data) {
+      localStorage.setItem(key, JSON.stringify({ antall: 1, sistVist: na }))
+      setTimeout(() => setVisPlanteTips(true), 2000)
+    } else {
+      const parsed = JSON.parse(data)
+      const dagerSiden = (na - parsed.sistVist) / (1000 * 60 * 60 * 24)
+      if (parsed.antall < 3 && dagerSiden >= 2) {
+        localStorage.setItem(key, JSON.stringify({ antall: parsed.antall + 1, sistVist: na }))
+        setTimeout(() => setVisPlanteTips(true), 2000)
+      }
+    }
+  }, [])
   const [hilsen, setHilsen] = useState('')
   const [brukerEpost, setBrukerEpost] = useState('')
   const [tittel, setTittel] = useState('Plantene dine')
@@ -182,8 +202,6 @@ export default function HjemPage() {
     hentData()
   }, [])
 
-  const [vannetPlanter, setVannetPlanter] = useState<Set<string>>(new Set())
-  const [fjernPlanter, setFjernPlanter] = useState<Set<string>>(new Set())
 
   async function vannPlante(e: React.MouseEvent, planteId: string, intervall: number) {
     e.preventDefault()
@@ -387,6 +405,18 @@ export default function HjemPage() {
         <InspoGalleri />
         <DeltAktivitet />
       </div>
+      {visPlanteTips && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 200, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '24px' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '28px', width: '100%', maxWidth: '400px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+            <p style={{ fontSize: '32px', marginBottom: '12px' }}>🌱</p>
+            <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '20px', fontWeight: 800, color: '#1c1c18', marginBottom: '8px' }}>Ikke alle plantene er lagt til ennå</p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42', lineHeight: 1.6, marginBottom: '24px' }}>Trykk på <strong>+</strong>-knappen nederst til høyre for å legge til flere planter i hagen 🪴</p>
+            <button onClick={() => setVisPlanteTips(false)} style={{ width: '100%', padding: '14px', borderRadius: '14px', border: 'none', backgroundColor: '#154212', color: 'white', fontFamily: 'Manrope, sans-serif', fontSize: '15px', fontWeight: 700, cursor: 'pointer' }}>
+              Forstått!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

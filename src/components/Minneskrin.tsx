@@ -84,6 +84,7 @@ export default function Minneskrin() {
       <style>{`
         @keyframes minneskrin-inn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes brev-inn { from { opacity: 0; transform: scale(0.92) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .minneskrin-scroll::-webkit-scrollbar { display: none; }
       `}</style>
 
       <div style={{ marginBottom: '32px', animation: 'minneskrin-inn 0.5s ease-out' }}>
@@ -103,14 +104,14 @@ export default function Minneskrin() {
           </p>
         </div>
 
-        {/* To rader med 3 kort, siste stikker ut til høyre */}
+        {/* Horisontal scroll – nyeste til venstre */}
         <div style={{ position: 'relative' }}>
-          <div style={{ overflow: 'hidden' }}>
+          <div className='minneskrin-scroll' style={{ overflowX: 'auto', overflowY: 'visible', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none', paddingBottom: '8px', WebkitMaskImage: 'linear-gradient(to right, black 80%, transparent 100%)', maskImage: 'linear-gradient(to right, black 80%, transparent 100%)' }}>
             <div
               onClick={() => setVisGalleri(true)}
-              style={{ display: 'grid', gridTemplateColumns: 'repeat(3, calc(33% + 6px))', gap: '16px 10px', padding: '8px 4px', cursor: 'pointer', width: 'calc(100% + 48px)' }}
+              style={{ display: 'flex', flexDirection: 'row', gap: '12px', padding: '8px 4px', cursor: 'pointer', width: 'max-content' }}
             >
-              {/* Åpnede polaroids */}
+              {/* Åpnede polaroids – nyeste til venstre */}
               {visData.map((m, i) => (
                 <div key={m.id} style={{
                   backgroundColor: 'white',
@@ -119,6 +120,8 @@ export default function Minneskrin() {
                   boxShadow: '0 3px 12px rgba(0,0,0,0.1)',
                   transform: `rotate(${rotasjoner[i]}deg)`,
                   position: 'relative',
+                  flexShrink: 0,
+                  width: '120px',
                 }}>
                   {m.bilde_url ? (
                     <div style={{ width: '100%', aspectRatio: '1/1', overflow: 'hidden' }}>
@@ -143,6 +146,8 @@ export default function Minneskrin() {
                   borderRadius: '3px',
                   boxShadow: '0 3px 10px rgba(0,0,0,0.06)',
                   transform: `rotate(${rotasjoner[visData.length + i] * 0.7}deg)`,
+                  flexShrink: 0,
+                  width: '120px',
                   opacity: 0.4,
                   position: 'relative',
                 }}>
@@ -157,11 +162,12 @@ export default function Minneskrin() {
             </div>
           </div>
 
-          {/* Gradient fade til høyre */}
+          {/* Gradient fade til høyre – fast på høyre kant */}
           <div style={{
-            position: 'absolute', top: 0, right: 0, bottom: 0, width: '60px',
+            position: 'absolute', top: 0, right: 0, bottom: 0, width: '80px',
             background: 'linear-gradient(to right, transparent, #fcf9f2)',
             pointerEvents: 'none',
+            zIndex: 2,
           }} />
         </div>
       </div>
