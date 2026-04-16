@@ -222,9 +222,9 @@ export default function NyPlantePage() {
                 >
                   <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '15px', fontWeight: 700, color: '#1c1c18', marginBottom: '2px' }}>{art.norskNavn}</p>
                   <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#4a4a42', fontStyle: 'italic' }}>{art.latinskNavn}</p>
-                  {art.matchetAlias && (
+                  {(art as any).matchetAlias && (
                     <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#4a7c59', marginTop: '2px' }}>
-                      også kjent som: {art.matchetAlias}
+                      også kjent som: {(art as any).matchetAlias}
                     </p>
                   )}
                 </button>
