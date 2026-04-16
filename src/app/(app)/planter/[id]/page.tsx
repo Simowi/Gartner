@@ -41,8 +41,20 @@ export default function PlanteProfil() {
         .single()
       if (data) {
         setPlante(data)
+        // Prøv art_id først, deretter match på latinsk navn
         if (data.art_id) {
           const funnetArt = planteArtDatabase.find(a => a.id === data.art_id)
+          if (funnetArt) {
+            setArtInfo(funnetArt)
+          }
+        } else if (data.art) {
+          const lower = data.art.toLowerCase().trim()
+          const funnetArt =
+            planteArtDatabase.find(a => a.latinskNavn?.toLowerCase() === lower) ||
+            planteArtDatabase.find(a => a.latinskNavn?.toLowerCase().includes(lower)) ||
+            planteArtDatabase.find(a => lower.includes(a.latinskNavn?.toLowerCase() || '')) ||
+            planteArtDatabase.find(a => a.aliaser?.some(al => al.toLowerCase() === lower)) ||
+            planteArtDatabase.find(a => a.latinskNavn?.toLowerCase().split(' ')[0] === lower.split(' ')[0])
           if (funnetArt) setArtInfo(funnetArt)
         }
       }
