@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
-import { Leaf, Plus, Droplets } from 'lucide-react'
+import { Droplets } from 'lucide-react'
 
 interface Plante {
   id: string
@@ -9,12 +9,14 @@ interface Plante {
   art: string
   plassering: string
   neste_vanning: string
+  vanning_intervall_dager: number
   bilde_url: string
 }
 
 export default function PlanterPage() {
   const [planter, setPlanter] = useState<Plante[]>([])
   const [laster, setLaster] = useState(true)
+  const [vannetPlanter, setVannetPlanter] = useState<Set<string>>(new Set())
   const supabase = createClient()
 
   useEffect(() => {
@@ -32,15 +34,31 @@ export default function PlanterPage() {
     hentPlanter()
   }, [])
 
+  async function vannPlante(e: React.MouseEvent, planteId: string, intervall: number) {
+    e.preventDefault()
+    e.stopPropagation()
+    const na = new Date()
+    const nestVanning = new Date()
+    nestVanning.setDate(nestVanning.getDate() + intervall)
+    await supabase.from('planter').update({
+      sist_vannet: na.toISOString(),
+      neste_vanning: nestVanning.toISOString(),
+    }).eq('id', planteId)
+    await supabase.from('vanningslogg').insert({
+      plante_id: planteId,
+      vannet_at: na.toISOString(),
+    })
+    setVannetPlanter(prev => new Set([...prev, planteId]))
+    setPlanter(prev => prev.map(p => p.id === planteId ? {
+      ...p,
+      sist_vannet: na.toISOString(),
+      neste_vanning: nestVanning.toISOString(),
+    } : p))
+  }
+
   if (laster) return (
     <div style={{ paddingTop: '52px', paddingBottom: '32px' }}>
-      <style>{`
-        @keyframes shimmer {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
-        }
-        .skeleton { background: linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 12px; }
-      `}</style>
+      <style dangerouslySetInnerHTML={{ __html: "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } .skeleton { background: linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 12px; }" }} />
       <div className="skeleton" style={{ width: '140px', height: '36px', marginBottom: '24px' }} />
       {[1,2,3,4,5].map(i => (
         <div key={i} className="skeleton" style={{ width: '100%', height: '72px', marginBottom: '10px' }} />
@@ -57,6 +75,11 @@ export default function PlanterPage() {
     return 'Om ' + diff + ' dager'
   }
 
+  const romRekkefølge = ['Hagen', 'Terrassen', 'Stuen', 'Kjøkkenet', 'Soverommet', 'Soverom oppe',
+    'Soverom nede', 'Kontoret', 'Toalettet', 'Gangen', 'Gangen oppe', 'Yttergangen',
+    'Vaskerommet', 'Trappen foran huset', 'Kjellerstuen', 'Kjellerbadet',
+    'Musikkrommet', 'Boden', 'Uten plassering']
+
   const grupperPerRom = (planter: Plante[]) => {
     const grupper: Record<string, Plante[]> = {}
     for (const plante of planter) {
@@ -64,91 +87,78 @@ export default function PlanterPage() {
       if (!grupper[rom]) grupper[rom] = []
       grupper[rom].push(plante)
     }
+    for (const rom of Object.keys(grupper)) {
+      grupper[rom].sort((a, b) => {
+        if (!a.neste_vanning) return 1
+        if (!b.neste_vanning) return -1
+        return new Date(a.neste_vanning).getTime() - new Date(b.neste_vanning).getTime()
+      })
+    }
     return Object.entries(grupper).sort(([a], [b]) => {
-      if (a === 'Uten plassering') return 1
-      if (b === 'Uten plassering') return -1
-      return a.localeCompare(b, 'nb')
+      const ai = romRekkefølge.indexOf(a)
+      const bi = romRekkefølge.indexOf(b)
+      if (ai === -1 && bi === -1) return a.localeCompare(b, 'nb')
+      if (ai === -1) return 1
+      if (bi === -1) return -1
+      return ai - bi
     })
   }
 
-  const miniatyrbilde = (url: string) => url + '?width=104&height=104&resize=cover'
+  const sorterteGrupper = grupperPerRom(planter)
 
   return (
-    <div style={{ paddingTop: '52px', paddingBottom: '32px' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '36px' }}>
-        <div>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', color: '#4a7c59', marginBottom: '6px', textTransform: 'uppercase' }}>
-            Samlingen din
-          </p>
-          <h1 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '42px', fontWeight: 800, color: '#1c1c18', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
-            Planter
-          </h1>
-        </div>
-        <a href="/planter/ny" style={{ width: '44px', height: '44px', borderRadius: '14px', backgroundColor: '#154212', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', flexShrink: 0, marginTop: '8px' }}>
-          <Plus size={20} color="white" />
-        </a>
-      </div>
+    <div style={{ paddingTop: '52px', paddingBottom: '100px' }}>
 
-      {planter.length === 0 ? (
-        <div style={{ borderRadius: '20px', padding: '48px 24px', textAlign: 'center', backgroundColor: '#f0ece3' }}>
-          <Leaf size={40} color="#c4c0b7" style={{ margin: '0 auto 16px' }} />
-          <h3 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '18px', fontWeight: 700, color: '#1c1c18', marginBottom: '8px' }}>
-            Ingen planter ennå
-          </h3>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42', marginBottom: '20px' }}>
-            Legg til din første plante for å komme i gang
-          </p>
-          <a href="/planter/ny" style={{ display: 'inline-block', padding: '12px 24px', borderRadius: '12px', backgroundColor: '#154212', color: 'white', fontFamily: 'Manrope, sans-serif', fontSize: '14px', fontWeight: 700, textDecoration: 'none' }}>
-            Legg til plante
-          </a>
-        </div>
+      <h1 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '28px', fontWeight: 800, color: '#1c1c18', marginBottom: '24px' }}>
+        Plantene
+      </h1>
+      {sorterteGrupper.length === 0 ? (
+        <p style={{ fontFamily: 'Inter, sans-serif', color: '#4a4a42' }}>Ingen planter ennå.</p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-          {grupperPerRom(planter).map(([rom, romPlanter]) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          {sorterteGrupper.map(([rom, romPlanter]) => (
             <div key={rom}>
-
-              {/* Seksjonsoverskrift */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#4a7c59', flexShrink: 0 }}>
-                  {rom}
-                </p>
-                <div style={{ flex: 1, height: '1px', backgroundColor: '#e8e4db' }} />
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#c4c0b7', flexShrink: 0 }}>
-                  {romPlanter.length} {romPlanter.length === 1 ? 'plante' : 'planter'}
-                </p>
-              </div>
-
-              {/* Plantekort */}
+              <h2 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '13px', fontWeight: 700, color: '#4a7c59', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>
+                {rom}
+              </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {romPlanter.map((plante) => (
-                  <a key={plante.id} href={'/planter/' + plante.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '16px', padding: '14px', backgroundColor: '#f0ece3', textDecoration: 'none' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{ width: '52px', height: '52px', borderRadius: '14px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
-                        {plante.bilde_url ? (
-                          <img src={miniatyrbilde(plante.bilde_url)} alt={plante.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
-                        ) : (
-                          <Leaf size={20} color="#154212" />
-                        )}
-                      </div>
-                      <div>
-                        <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '15px', fontWeight: 700, color: '#1c1c18', marginBottom: '2px' }}>
+                {romPlanter.map(plante => (
+                  <a key={plante.id} href={'/planter/' + plante.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '16px', padding: '14px 16px', backgroundColor: vannetPlanter.has(plante.id) ? '#e8f0e5' : '#f0ece3', textDecoration: 'none', position: 'relative', overflow: 'hidden', transition: 'background-color 0.4s ease', opacity: vannetPlanter.has(plante.id) ? 0.7 : 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
+                      {plante.bilde_url ? (
+                        <img src={plante.bilde_url} alt={plante.navn} style={{ width: '44px', height: '44px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0 }} />
+                      ) : (
+                        <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Droplets size={20} color="#4a7c59" />
+                        </div>
+                      )}
+                      <div style={{ minWidth: 0 }}>
+                        <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '15px', fontWeight: 700, color: '#1c1c18', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {plante.navn}
                         </p>
                         {plante.art && (
-                          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#4a4a42', fontStyle: 'italic' }}>
+                          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#4a4a42', fontStyle: 'italic', margin: 0 }}>
                             {plante.art}
                           </p>
                         )}
                       </div>
                     </div>
-                    {plante.neste_vanning && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
-                        <Droplets size={13} color="#4a7c59" />
-                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 500, color: '#4a7c59' }}>
-                          {dagTilVanning(plante.neste_vanning)}
-                        </span>
-                      </div>
-                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, marginLeft: '8px' }}>
+                      {plante.neste_vanning && !vannetPlanter.has(plante.id) && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <Droplets size={13} color="#4a7c59" />
+                          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 500, color: '#4a7c59' }}>
+                            {dagTilVanning(plante.neste_vanning)}
+                          </span>
+                        </div>
+                      )}
+                      <button onClick={(e) => vannPlante(e, plante.id, plante.vanning_intervall_dager)} disabled={vannetPlanter.has(plante.id)} style={{ width: '36px', height: '36px', borderRadius: '50%', border: 'none', backgroundColor: vannetPlanter.has(plante.id) ? '#154212' : '#d4e8d0', cursor: vannetPlanter.has(plante.id) ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease', transform: vannetPlanter.has(plante.id) ? 'scale(1.1)' : 'scale(1)', flexShrink: 0 }}>
+                        {vannetPlanter.has(plante.id)
+                          ? <span style={{ fontSize: '16px', color: 'white' }}>✓</span>
+                          : <Droplets size={16} color="#4a7c59" />
+                        }
+                      </button>
+                    </div>
                   </a>
                 ))}
               </div>

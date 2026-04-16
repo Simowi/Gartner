@@ -49,12 +49,13 @@ export default function PlanteProfil() {
           }
         } else if (data.art) {
           const lower = data.art.toLowerCase().trim()
+          const safeDb = planteArtDatabase.filter(Boolean)
           const funnetArt =
-            planteArtDatabase.find(a => a.latinskNavn?.toLowerCase() === lower) ||
-            planteArtDatabase.find(a => a.latinskNavn?.toLowerCase().includes(lower)) ||
-            planteArtDatabase.find(a => lower.includes(a.latinskNavn?.toLowerCase() || '')) ||
-            planteArtDatabase.find(a => a.aliaser?.some(al => al.toLowerCase() === lower)) ||
-            planteArtDatabase.find(a => a.latinskNavn?.toLowerCase().split(' ')[0] === lower.split(' ')[0])
+            safeDb.find(a => a.latinskNavn?.toLowerCase() === lower) ||
+            safeDb.find(a => a.latinskNavn?.toLowerCase().includes(lower)) ||
+            safeDb.find(a => lower.includes(a.latinskNavn?.toLowerCase() || '')) ||
+            safeDb.find(a => a.aliaser?.some(al => al.toLowerCase() === lower)) ||
+            safeDb.find(a => a.latinskNavn?.toLowerCase().split(' ')[0] === lower.split(' ')[0])
           if (funnetArt) setArtInfo(funnetArt)
         }
       }
