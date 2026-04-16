@@ -1,14 +1,21 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Onboarding from '@/components/Onboarding'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Home, Leaf, Plus, CalendarDays, Camera } from 'lucide-react'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [visOnboarding, setVisOnboarding] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [visMeny, setVisMeny] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
+  const sveipStartX = useRef(0)
+  const sveipStartY = useRef(0)
+  const erKantSveip = useRef(false)
+
+  const faner = ['/hjem', '/planter', '/kalender']
 
   useEffect(() => {
     setMounted(true)
@@ -16,12 +23,43 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     if (!sett) setVisOnboarding(true)
   }, [])
 
+  useEffect(() => {
+    function onTouchStart(e: TouchEvent) {
+      const x = e.touches[0].clientX
+      sveipStartX.current = x
+      sveipStartY.current = e.touches[0].clientY
+      erKantSveip.current = x < 30 || x > window.innerWidth - 30
+    }
+
+    function onTouchEnd(e: TouchEvent) {
+      if (!erKantSveip.current) return
+      const dx = e.changedTouches[0].clientX - sveipStartX.current
+      const dy = e.changedTouches[0].clientY - sveipStartY.current
+      if (Math.abs(dy) > Math.abs(dx)) return
+      if (Math.abs(dx) < 50) return
+
+      const idx = faner.indexOf(pathname)
+      if (idx === -1) return
+
+      if (dx < 0 && idx < faner.length - 1) {
+        router.push(faner[idx + 1])
+      } else if (dx > 0 && idx > 0) {
+        router.push(faner[idx - 1])
+      }
+    }
+
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchend', onTouchEnd, { passive: true })
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchend', onTouchEnd)
+    }
+  }, [pathname, router])
+
   function onFerdig() {
     localStorage.setItem('gartner_onboarding_sett', 'ja')
     setVisOnboarding(false)
   }
-
-  const pathname = usePathname()
 
   const nav = [
     { href: '/hjem', icon: Home, label: 'Hjem' },
@@ -65,7 +103,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             )
           })}
 
-          {/* Handlingsknapp */}
           <div style={{ position: 'relative' }}>
             {visMeny && (
               <>
