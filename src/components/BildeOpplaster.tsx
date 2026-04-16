@@ -8,7 +8,7 @@ interface Props {
   eksisterendeBilde?: string
 }
 
-async function komprimer(fil: File, maksBredd = 800): Promise<Blob> {
+async function komprimer(fil: File, maksBredd = 1200): Promise<Blob> {
   return new Promise((resolve) => {
     const img = new Image()
     const url = URL.createObjectURL(fil)
@@ -46,10 +46,11 @@ export default function BildeOpplaster({ onBildeLastetOpp, eksisterendeBilde }: 
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      const filnavn = user.id + '/' + Date.now() + '.' + fil.name.split('.').pop()
+      const komprimertBlob = await komprimer(fil)
+      const filnavn = user.id + '/' + Date.now() + '.jpg'
       const { error } = await supabase.storage
         .from('plantebilder')
-        .upload(filnavn, fil, { upsert: true })
+        .upload(filnavn, komprimertBlob, { upsert: true, contentType: 'image/jpeg' })
 
       if (error) {
         console.error('Opplastingsfeil:', error)
