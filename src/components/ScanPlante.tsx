@@ -219,47 +219,57 @@ export default function ScanPlante({ onArtValgt }: Props) {
                 onClick={() => velgForslag(f)}
                 style={{
                   width: '100%',
-                  padding: '0',
+                  padding: '12px',
                   borderRadius: '14px',
                   border: valgt === f.navn ? '2px solid #154212' : '2px solid transparent',
                   backgroundColor: valgt === f.navn ? '#d4e8d0' : '#f0ece3',
                   cursor: 'pointer',
                   textAlign: 'left',
-                  overflow: 'hidden',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
                 }}
               >
-                {f.bildeUrl && idx === 0 && (
-                  <div style={{ width: '100%', height: '140px', overflow: 'hidden' }}>
+                {/* Bilde - størst for høyeste match */}
+                <div style={{
+                  width: idx === 0 ? '72px' : '52px',
+                  height: idx === 0 ? '72px' : '52px',
+                  borderRadius: '10px',
+                  overflow: 'hidden',
+                  flexShrink: 0,
+                  backgroundColor: '#d4e8d0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  {f.bildeUrl ? (
                     <img src={f.bildeUrl} alt={f.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                )}
-                {f.bildeUrl && idx > 0 && (
-                  <div style={{ width: '100%', height: '80px', overflow: 'hidden' }}>
-                    <img src={f.bildeUrl} alt={f.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                )}
-                <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {valgt === f.navn ? (
-                      <CheckCircle size={18} color="#154212" />
-                    ) : (
-                      <Leaf size={18} color="#4a7c59" />
-                    )}
-                    <div>
-                      <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '14px', fontWeight: 700, color: '#1c1c18' }}>
-                        {f.norskNavn}
-                      </p>
-                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#4a4a42', fontStyle: 'italic' }}>
-                        {f.navn}
-                      </p>
-                    </div>
-                  </div>
-                  <div style={{ backgroundColor: f.sannsynlighet > 70 ? '#4a7c59' : '#e8e4db', borderRadius: '8px', padding: '4px 8px', flexShrink: 0 }}>
-                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 700, color: f.sannsynlighet > 70 ? 'white' : '#4a4a42' }}>
-                      {f.sannsynlighet}%
-                    </p>
-                  </div>
+                  ) : (
+                    <Leaf size={idx === 0 ? 28 : 20} color="#4a7c59" />
+                  )}
                 </div>
+
+                {/* Navn og latinsk */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: idx === 0 ? '15px' : '13px', fontWeight: 700, color: '#1c1c18', marginBottom: '2px' }}>
+                    {f.norskNavn}
+                  </p>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#4a4a42', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {f.navn}
+                  </p>
+                </div>
+
+                {/* Prosent-badge */}
+                <div style={{ backgroundColor: f.sannsynlighet > 70 ? '#154212' : '#e8e4db', borderRadius: '8px', padding: '4px 8px', flexShrink: 0 }}>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 700, color: f.sannsynlighet > 70 ? 'white' : '#4a4a42' }}>
+                    {f.sannsynlighet}%
+                  </p>
+                </div>
+
+                {/* Hake hvis valgt */}
+                {valgt === f.navn && (
+                  <CheckCircle size={18} color="#154212" style={{ flexShrink: 0 }} />
+                )}
               </button>
             ))}
           </div>
