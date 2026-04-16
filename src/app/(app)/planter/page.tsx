@@ -88,14 +88,16 @@ function PlanteKort({ plante, vannet, onVann, onSlett }: {
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, marginLeft: '8px' }}>
-              {plante.neste_vanning && !vannet && (
+              {vannet ? (
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 500, color: '#4a7c59' }}>Vannet 💧</span>
+              ) : plante.neste_vanning ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <Droplets size={13} color="#4a7c59" />
                   <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 500, color: '#4a7c59' }}>
                     {dagTilVanning(plante.neste_vanning)}
                   </span>
                 </div>
-              )}
+              ) : null}
               <button
                 onClick={(e) => onVann(e, plante.id, plante.vanning_intervall_dager)}
                 disabled={vannet}

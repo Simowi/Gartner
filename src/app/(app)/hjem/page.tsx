@@ -341,7 +341,9 @@ export default function HjemPage() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {!vannetPlanter.has(plante.id) && (
+                  {vannetPlanter.has(plante.id) ? (
+                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#4a7c59' }}>Vannet 💧</span>
+                  ) : (
                     <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#4a7c59' }}>
                       {dagTilVanning(plante.neste_vanning) ?? '–'}
                     </span>
