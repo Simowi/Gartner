@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
   try {
     const url = type === 'diagnose'
       ? 'https://plant.id/api/v3/health_assessment?details=local_name,description,treatment&language=no'
-      : 'https://plant.id/api/v3/identification?details=common_names,description,watering&language=no'
+      : 'https://plant.id/api/v3/identification?details=common_names,description,watering,image&language=no'
 
     const res = await fetch(url, {
       method: 'POST',

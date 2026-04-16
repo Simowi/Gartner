@@ -150,7 +150,7 @@ export default function NyPlantePage() {
 
         {/* Scan-knapp */}
         <ScanPlante onArtValgt={async (artId, latinsk, norsk, intervall, bildeBase64, detektertSort) => {
-          const funnetArt = planteArtDatabase.find(a => a.id === artId)
+          const funnetArt = artId ? planteArtDatabase.find(a => a.id === artId) : null
           if (detektertSort) setSort(detektertSort)
           if (funnetArt) {
             setValgtArt(funnetArt)

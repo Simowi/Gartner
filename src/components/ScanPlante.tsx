@@ -9,6 +9,7 @@ interface Forslag {
   sannsynlighet: number
   artId: string | null
   sort?: string | null
+  bildeUrl?: string | null
 }
 
 interface Props {
@@ -79,7 +80,7 @@ export default function ScanPlante({ onArtValgt }: Props) {
         const res = await fetch('/api/plantid', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ bilde: base64, type: 'identifiser' })
+          body: JSON.stringify({ bilde: base64, type: 'identifiser', medBilder: true })
         })
         const data = await res.json()
 
@@ -98,12 +99,14 @@ export default function ScanPlante({ onArtValgt }: Props) {
           // Hent ut sort fra Plant.id-navn, f.eks. "Dahlia pinnata 'Café au Lait'" → "Café au Lait"
           const sortMatch = s.name.match(/['"'']([^'"'']+)['"'']/)
           const sort = sortMatch ? sortMatch[1] : null
+          const bildeUrl = s.details?.image?.value || s.details?.images?.[0]?.value || null
           return {
             navn: s.name,
             norskNavn,
             sannsynlighet: Math.round(s.probability * 100),
             artId: artIDb?.id || null,
             sort,
+            bildeUrl,
           }
         })
 
@@ -210,42 +213,52 @@ export default function ScanPlante({ onArtValgt }: Props) {
             Plant.id fant disse artene:
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {forslag.map((f) => (
+            {forslag.map((f, idx) => (
               <button
                 key={f.navn}
                 onClick={() => velgForslag(f)}
                 style={{
                   width: '100%',
-                  padding: '14px',
+                  padding: '0',
                   borderRadius: '14px',
-                  border: 'none',
+                  border: valgt === f.navn ? '2px solid #154212' : '2px solid transparent',
                   backgroundColor: valgt === f.navn ? '#d4e8d0' : '#f0ece3',
                   cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
                   textAlign: 'left',
+                  overflow: 'hidden',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  {valgt === f.navn ? (
-                    <CheckCircle size={18} color="#154212" />
-                  ) : (
-                    <Leaf size={18} color="#4a7c59" />
-                  )}
-                  <div>
-                    <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '14px', fontWeight: 700, color: '#1c1c18' }}>
-                      {f.norskNavn}
-                    </p>
-                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#4a4a42', fontStyle: 'italic' }}>
-                      {f.navn}
+                {f.bildeUrl && idx === 0 && (
+                  <div style={{ width: '100%', height: '140px', overflow: 'hidden' }}>
+                    <img src={f.bildeUrl} alt={f.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                )}
+                {f.bildeUrl && idx > 0 && (
+                  <div style={{ width: '100%', height: '80px', overflow: 'hidden' }}>
+                    <img src={f.bildeUrl} alt={f.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                )}
+                <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {valgt === f.navn ? (
+                      <CheckCircle size={18} color="#154212" />
+                    ) : (
+                      <Leaf size={18} color="#4a7c59" />
+                    )}
+                    <div>
+                      <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '14px', fontWeight: 700, color: '#1c1c18' }}>
+                        {f.norskNavn}
+                      </p>
+                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#4a4a42', fontStyle: 'italic' }}>
+                        {f.navn}
+                      </p>
+                    </div>
+                  </div>
+                  <div style={{ backgroundColor: f.sannsynlighet > 70 ? '#4a7c59' : '#e8e4db', borderRadius: '8px', padding: '4px 8px', flexShrink: 0 }}>
+                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 700, color: f.sannsynlighet > 70 ? 'white' : '#4a4a42' }}>
+                      {f.sannsynlighet}%
                     </p>
                   </div>
-                </div>
-                <div style={{ backgroundColor: f.sannsynlighet > 70 ? '#d4e8d0' : '#f0ece3', borderRadius: '8px', padding: '4px 8px' }}>
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 700, color: f.sannsynlighet > 70 ? '#154212' : '#4a4a42' }}>
-                    {f.sannsynlighet}%
-                  </p>
                 </div>
               </button>
             ))}
