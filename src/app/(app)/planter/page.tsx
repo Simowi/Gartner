@@ -106,6 +106,7 @@ function PlanteKort({ plante, vannet, onVann, onSlett }: {
           transition: sveiper ? 'none' : 'transform 0.3s ease, background-color 0.4s ease',
           opacity: vannet ? 0.7 : 1,
           userSelect: 'none',
+          touchAction: 'pan-y',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
