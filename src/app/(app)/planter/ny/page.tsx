@@ -23,6 +23,8 @@ export default function NyPlantePage() {
   const [laster, setLaster] = useState(false)
   const [feil, setFeil] = useState('')
   const søkRef = useRef<HTMLDivElement>(null)
+  const kallenavnRef = useRef<HTMLInputElement>(null)
+  const [highlightNavn, setHighlightNavn] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -54,6 +56,11 @@ export default function NyPlantePage() {
   function velgArt(art: PlanteArt) {
     setValgtArt(art)
     setArtSøk(art.norskNavn)
+    setTimeout(() => {
+      kallenavnRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      setHighlightNavn(true)
+      setTimeout(() => setHighlightNavn(false), 1800)
+    }, 200)
     setArtForslag([])
     setVisForslag(false)
     if (!navn) setNavn(art.norskNavn)
@@ -158,6 +165,11 @@ export default function NyPlantePage() {
           } else {
             setArtSøk(norsk)
           }
+          setTimeout(() => {
+            kallenavnRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            setHighlightNavn(true)
+            setTimeout(() => setHighlightNavn(false), 1800)
+          }, 300)
           if (!navn) setNavn(norsk)
           setVanningIntervall(String(intervall))
 
@@ -304,7 +316,8 @@ export default function NyPlantePage() {
       {/* Navn */}
         <div>
           <label style={labelStil}>Kallenavn / navn *</label>
-          <input type="text" value={navn} onChange={(e) => setNavn(e.target.value)} placeholder="f.eks. Monstera, Fredriksen..." style={inputStil} />
+          <input type="text" value={navn} onChange={(e) => setNavn(e.target.value)} ref={kallenavnRef}
+              placeholder="f.eks. Monstera, Fredriksen..." style={inputStil} />
         </div>
 
         {/* Plassering */}
