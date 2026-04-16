@@ -154,7 +154,7 @@ export default function PlanteProfil() {
       {/* Hero-bilde */}
       {plante.bilde_url && (
         <div style={{ width: '100%', height: '240px', borderRadius: '20px', overflow: 'hidden', marginBottom: '24px' }}>
-          <img src={plante.bilde_url} alt={plante.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={plante.bilde_url + '?width=600&height=600&resize=cover'} alt={plante.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="eager" />
         </div>
       )}
 
