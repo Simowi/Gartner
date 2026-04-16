@@ -20,7 +20,7 @@ export interface PlanteArt {
   sorter?: string[]
 }
 
-export const planteArtDatabase: PlanteArt[] = [
+export const planteArtDatabaseRaw: (PlanteArt | undefined)[] = [
   {
     id: 'monstera-deliciosa',
     norskNavn: 'Vindusblad',
@@ -5714,3 +5714,5 @@ export function søkPlanteArt(søkeord: string): (PlanteArt & { matchetAlias?: s
     return { ...p, matchetAlias: visAlias ? matchetAlias : undefined }
   })
 }
+
+export const planteArtDatabase: PlanteArt[] = planteArtDatabaseRaw.filter((p): p is PlanteArt => p !== undefined)
