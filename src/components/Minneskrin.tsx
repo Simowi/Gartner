@@ -16,7 +16,11 @@ interface LåstKort {
   hint: string
 }
 
-export default function Minneskrin() {
+interface Props {
+  refreshKey?: number
+}
+
+export default function Minneskrin({ refreshKey }: Props) {
   const [lesteMeldinger, setLesteMeldinger] = useState<Melding[]>([])
   const [totalMeldinger, setTotalMeldinger] = useState(0)
   const [visGalleri, setVisGalleri] = useState(false)
@@ -25,7 +29,7 @@ export default function Minneskrin() {
   const [rotasjoner] = useState(() => Array.from({ length: 60 }, () => (Math.random() > 0.5 ? 1 : -1) * (1 + Math.random() * 3)))
   const supabase = createClient()
 
-  useEffect(() => { hentLeste() }, [])
+  useEffect(() => { hentLeste() }, [refreshKey])
 
   async function hentLeste() {
     const { data: { user } } = await supabase.auth.getUser()

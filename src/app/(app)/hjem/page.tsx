@@ -151,6 +151,7 @@ export default function HjemPage() {
   const [visPlanteTips, setVisPlanteTips] = useState(false)
   const [vannetPlanter, setVannetPlanter] = useState<Set<string>>(new Set())
   const [fjernPlanter, setFjernPlanter] = useState<Set<string>>(new Set())
+  const [minneskrinRefresh, setMinnesskrinRefresh] = useState(0)
 
   useEffect(() => {
     setMounted(true)
@@ -303,7 +304,7 @@ export default function HjemPage() {
       </div>
 
       <PushVarsler />
-      <DagligMelding />
+      <DagligMelding onMeldingLagt={() => setMinnesskrinRefresh(k => k + 1)} />
 
       <div>
         <h2 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '22px', fontWeight: 700, color: '#1c1c18', marginBottom: '16px', letterSpacing: '-0.01em' }}>
@@ -400,7 +401,7 @@ export default function HjemPage() {
 
         <VærStripe />
         <Plantegalleri />
-        <Minneskrin />
+        <Minneskrin refreshKey={minneskrinRefresh} />
         <Sesongkort />
         <InspoGalleri />
         <DeltAktivitet />

@@ -11,7 +11,11 @@ interface Melding {
   bilde_url: string | null
 }
 
-export default function DagligMelding() {
+interface Props {
+  onMeldingLagt?: () => void
+}
+
+export default function DagligMelding({ onMeldingLagt }: Props) {
   const [meldinger, setMeldinger] = useState<Melding[]>([])
   const [lesteIds, setLesteIds] = useState<Set<string>>(new Set())
   const [visModal, setVisModal] = useState(false)
@@ -74,6 +78,7 @@ const iDag = new Date().toISOString().split('T')[0]
 
     const nyeUleste = meldinger.filter(m => !nyLesteIds.has(m.id))
     if (nyeUleste.length === 0) setVisModal(false)
+    onMeldingLagt?.()
   }
 
   const uleste = meldinger.filter(m => !lesteIds.has(m.id))
