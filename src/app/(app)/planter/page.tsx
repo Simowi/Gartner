@@ -1,7 +1,8 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase'
 import { Droplets } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 interface Plante {
   id: string
@@ -13,10 +14,157 @@ interface Plante {
   bilde_url: string
 }
 
+function PlanteKort({ plante, vannet, onVann, onSlett }: {
+  plante: Plante
+  vannet: boolean
+  onVann: (e: React.MouseEvent, id: string, intervall: number) => void
+  onSlett: (id: string) => void
+}) {
+  const router = useRouter()
+  const [sveipX, setSveipX] = useState(0)
+  const [sveiper, setSveiper] = useState(false)
+  const startX = useRef(0)
+  const startY = useRef(0)
+  const erSveip = useRef(false)
+  const SVEIP_GRENSE = 80
+
+  const dagTilVanning = (dato: string) => {
+    if (!dato) return null
+    const diff = Math.ceil((new Date(dato).getTime() - Date.now()) / 86400000)
+    if (diff < 0) return 'Forfalt!'
+    if (diff === 0) return 'I dag'
+    if (diff === 1) return 'I morgen'
+    return 'Om ' + diff + ' dager'
+  }
+
+  function onTouchStart(e: React.TouchEvent) {
+    startX.current = e.touches[0].clientX
+    startY.current = e.touches[0].clientY
+    erSveip.current = false
+    setSveiper(true)
+  }
+
+  function onTouchMove(e: React.TouchEvent) {
+    const dx = e.touches[0].clientX - startX.current
+    const dy = e.touches[0].clientY - startY.current
+    if (!erSveip.current && Math.abs(dy) > Math.abs(dx)) {
+      setSveiper(false)
+      return
+    }
+    erSveip.current = true
+    if (dx < 0) {
+      setSveipX(Math.max(dx, -SVEIP_GRENSE * 2))
+    } else if (sveipX < 0) {
+      setSveipX(Math.min(0, sveipX + dx))
+    }
+  }
+
+  function onTouchEnd() {
+    setSveiper(false)
+    if (sveipX < -SVEIP_GRENSE) {
+      setSveipX(-SVEIP_GRENSE * 2)
+    } else {
+      setSveipX(0)
+    }
+  }
+
+  function lukkSveip() {
+    setSveipX(0)
+  }
+
+  const aapen = sveipX <= -SVEIP_GRENSE
+
+  return (
+    <div style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, display: 'flex', alignItems: 'stretch' }}>
+        <button
+          onClick={() => { lukkSveip(); router.push('/planter/' + plante.id + '?rediger=true') }}
+          style={{ width: '80px', backgroundColor: '#4a7c59', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+        >
+          <span style={{ fontSize: '20px' }}>✏️</span>
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, color: 'white' }}>Rediger</span>
+        </button>
+        <button
+          onClick={() => { lukkSveip(); onSlett(plante.id) }}
+          style={{ width: '80px', backgroundColor: '#c0392b', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', borderRadius: '0 16px 16px 0' }}
+        >
+          <span style={{ fontSize: '20px' }}>🗑️</span>
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, color: 'white' }}>Slett</span>
+        </button>
+      </div>
+      <div
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onClick={() => { if (aapen) { lukkSveip() } else { router.push('/planter/' + plante.id) } }}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          borderRadius: '16px', padding: '14px 16px',
+          backgroundColor: vannet ? '#e8f0e5' : '#f0ece3',
+          position: 'relative', cursor: 'pointer',
+          transform: 'translateX(' + sveipX + 'px)',
+          transition: sveiper ? 'none' : 'transform 0.3s ease, background-color 0.4s ease',
+          opacity: vannet ? 0.7 : 1,
+          userSelect: 'none',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
+          {plante.bilde_url ? (
+            <img src={plante.bilde_url} alt={plante.navn} style={{ width: '44px', height: '44px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0 }} />
+          ) : (
+            <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Droplets size={20} color="#4a7c59" />
+            </div>
+          )}
+          <div style={{ minWidth: 0 }}>
+            <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '15px', fontWeight: 700, color: '#1c1c18', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {plante.navn}
+            </p>
+            {plante.art && (
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#4a4a42', fontStyle: 'italic', margin: 0 }}>
+                {plante.art}
+              </p>
+            )}
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, marginLeft: '8px' }}>
+          {plante.neste_vanning && !vannet && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <Droplets size={13} color="#4a7c59" />
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 500, color: '#4a7c59' }}>
+                {dagTilVanning(plante.neste_vanning)}
+              </span>
+            </div>
+          )}
+          <button
+            onClick={(e) => onVann(e, plante.id, plante.vanning_intervall_dager)}
+            disabled={vannet}
+            style={{
+              width: '36px', height: '36px', borderRadius: '50%', border: 'none',
+              backgroundColor: vannet ? '#154212' : '#d4e8d0',
+              cursor: vannet ? 'default' : 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 0.3s ease',
+              transform: vannet ? 'scale(1.1)' : 'scale(1)',
+              flexShrink: 0,
+            }}
+          >
+            {vannet
+              ? <span style={{ fontSize: '16px', color: 'white' }}>✓</span>
+              : <Droplets size={16} color="#4a7c59" />
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function PlanterPage() {
   const [planter, setPlanter] = useState<Plante[]>([])
   const [laster, setLaster] = useState(true)
   const [vannetPlanter, setVannetPlanter] = useState<Set<string>>(new Set())
+  const [sletterId, setSletterId] = useState<string | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -56,24 +204,28 @@ export default function PlanterPage() {
     } : p))
   }
 
+  async function slettPlante(planteId: string) {
+    setSletterId(planteId)
+  }
+
+  async function bekreftSlett() {
+    if (!sletterId) return
+    await supabase.from('planter').delete().eq('id', sletterId)
+    setPlanter(prev => prev.filter(p => p.id !== sletterId))
+    setSletterId(null)
+  }
+
+  const shimmerCss = '@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } .skeleton { background: linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 12px; }'
+
   if (laster) return (
     <div style={{ paddingTop: '52px', paddingBottom: '32px' }}>
-      <style dangerouslySetInnerHTML={{ __html: "@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } .skeleton { background: linear-gradient(90deg, #f0ece3 25%, #e8e4db 50%, #f0ece3 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 12px; }" }} />
+      <style dangerouslySetInnerHTML={{ __html: shimmerCss }} />
       <div className="skeleton" style={{ width: '140px', height: '36px', marginBottom: '24px' }} />
       {[1,2,3,4,5].map(i => (
         <div key={i} className="skeleton" style={{ width: '100%', height: '72px', marginBottom: '10px' }} />
       ))}
     </div>
   )
-
-  const dagTilVanning = (dato: string) => {
-    if (!dato) return null
-    const diff = Math.ceil((new Date(dato).getTime() - Date.now()) / 86400000)
-    if (diff < 0) return 'Forfalt!'
-    if (diff === 0) return 'I dag'
-    if (diff === 1) return 'I morgen'
-    return 'Om ' + diff + ' dager'
-  }
 
   const romRekkefølge = ['Hagen', 'Terrassen', 'Stuen', 'Kjøkkenet', 'Soverommet', 'Soverom oppe',
     'Soverom nede', 'Kontoret', 'Toalettet', 'Gangen', 'Gangen oppe', 'Yttergangen',
@@ -108,10 +260,27 @@ export default function PlanterPage() {
 
   return (
     <div style={{ paddingTop: '52px', paddingBottom: '100px' }}>
-
       <h1 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '28px', fontWeight: 800, color: '#1c1c18', marginBottom: '24px' }}>
         Plantene
       </h1>
+      {sletterId && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+          <div style={{ backgroundColor: '#fdfaf3', borderRadius: '20px', padding: '28px 24px', width: '100%', maxWidth: '320px' }}>
+            <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '18px', fontWeight: 700, color: '#1c1c18', marginBottom: '8px' }}>Slett plante?</p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4a4a42', marginBottom: '24px' }}>
+              {planter.find(p => p.id === sletterId)?.navn} blir slettet permanent.
+            </p>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={() => setSletterId(null)} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: 'none', backgroundColor: '#e8e4db', fontFamily: 'Manrope, sans-serif', fontSize: '15px', fontWeight: 600, cursor: 'pointer' }}>
+                Avbryt
+              </button>
+              <button onClick={bekreftSlett} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: 'none', backgroundColor: '#c0392b', color: 'white', fontFamily: 'Manrope, sans-serif', fontSize: '15px', fontWeight: 600, cursor: 'pointer' }}>
+                Slett
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {sorterteGrupper.length === 0 ? (
         <p style={{ fontFamily: 'Inter, sans-serif', color: '#4a4a42' }}>Ingen planter ennå.</p>
       ) : (
@@ -123,43 +292,13 @@ export default function PlanterPage() {
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {romPlanter.map(plante => (
-                  <a key={plante.id} href={'/planter/' + plante.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '16px', padding: '14px 16px', backgroundColor: vannetPlanter.has(plante.id) ? '#e8f0e5' : '#f0ece3', textDecoration: 'none', position: 'relative', overflow: 'hidden', transition: 'background-color 0.4s ease', opacity: vannetPlanter.has(plante.id) ? 0.7 : 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
-                      {plante.bilde_url ? (
-                        <img src={plante.bilde_url} alt={plante.navn} style={{ width: '44px', height: '44px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0 }} />
-                      ) : (
-                        <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Droplets size={20} color="#4a7c59" />
-                        </div>
-                      )}
-                      <div style={{ minWidth: 0 }}>
-                        <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '15px', fontWeight: 700, color: '#1c1c18', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {plante.navn}
-                        </p>
-                        {plante.art && (
-                          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#4a4a42', fontStyle: 'italic', margin: 0 }}>
-                            {plante.art}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, marginLeft: '8px' }}>
-                      {plante.neste_vanning && !vannetPlanter.has(plante.id) && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                          <Droplets size={13} color="#4a7c59" />
-                          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: 500, color: '#4a7c59' }}>
-                            {dagTilVanning(plante.neste_vanning)}
-                          </span>
-                        </div>
-                      )}
-                      <button onClick={(e) => vannPlante(e, plante.id, plante.vanning_intervall_dager)} disabled={vannetPlanter.has(plante.id)} style={{ width: '36px', height: '36px', borderRadius: '50%', border: 'none', backgroundColor: vannetPlanter.has(plante.id) ? '#154212' : '#d4e8d0', cursor: vannetPlanter.has(plante.id) ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease', transform: vannetPlanter.has(plante.id) ? 'scale(1.1)' : 'scale(1)', flexShrink: 0 }}>
-                        {vannetPlanter.has(plante.id)
-                          ? <span style={{ fontSize: '16px', color: 'white' }}>✓</span>
-                          : <Droplets size={16} color="#4a7c59" />
-                        }
-                      </button>
-                    </div>
-                  </a>
+                  <PlanteKort
+                    key={plante.id}
+                    plante={plante}
+                    vannet={vannetPlanter.has(plante.id)}
+                    onVann={vannPlante}
+                    onSlett={slettPlante}
+                  />
                 ))}
               </div>
             </div>
