@@ -107,6 +107,7 @@ function PlanteKort({ plante, vannet, onVann, onSlett }: {
           opacity: vannet ? 0.7 : 1,
           userSelect: 'none',
           touchAction: 'pan-y',
+          touchAction: 'pan-y',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
