@@ -21,7 +21,8 @@ export default function ScanPlante({ onArtValgt }: Props) {
   const [feil, setFeil] = useState('')
   const [valgt, setValgt] = useState<string | null>(null)
   const [bildeBase64, setBildeBase64] = useState('')
-  const inputRef = useRef<HTMLInputElement>(null)
+  const kameraRef = useRef<HTMLInputElement>(null)
+  const galleriRef = useRef<HTMLInputElement>(null)
 
   function finnArtIDatabase(latinskNavn: string) {
     const lower = latinskNavn.toLowerCase().trim()
@@ -102,8 +103,9 @@ export default function ScanPlante({ onArtValgt }: Props) {
         })
 
         setForslag(resultater)
-      } catch (e) {
-        setFeil('Noe gikk galt. Prøv igjen.')
+      } catch (e: any) {
+        console.error('Scan feil:', e)
+        setFeil('Feil: ' + (e?.message || 'Ukjent feil'))
       }
       setLaster(false)
     }
@@ -112,53 +114,83 @@ export default function ScanPlante({ onArtValgt }: Props) {
 
   function velgForslag(f: Forslag) {
     setValgt(f.navn)
-    const artIDb = planteArtDatabase.find(p => p.id === f.artId)
+    const artIDb = f.artId ? planteArtDatabase.find(p => p.id === f.artId) : null
     onArtValgt(
       f.artId || '',
-      f.navn,
+      artIDb ? artIDb.latinskNavn : f.navn,
       f.norskNavn,
-      artIDb?.vanningIntervallDager || 7,
-      bildeBase64
+      artIDb ? artIDb.vanningIntervallDager : 7,
+      bildeBase64,
+      f.sort || null
     )
   }
 
   return (
     <div style={{ marginBottom: '8px' }}>
+      {/* Kamera-input */}
       <input
-        ref={inputRef}
+        ref={kameraRef}
         type="file"
         accept="image/*"
         capture="environment"
         onChange={håndterBilde}
         style={{ display: 'none' }}
       />
+      {/* Galleri-input */}
+      <input
+        ref={galleriRef}
+        type="file"
+        accept="image/*"
+        onChange={håndterBilde}
+        style={{ display: 'none' }}
+      />
 
-      <button
-        onClick={() => inputRef.current?.click()}
-        disabled={laster}
-        style={{
-          width: '100%',
-          padding: '16px',
-          borderRadius: '16px',
-          border: '2px dashed #d4e8d0',
-          backgroundColor: '#f7fbf7',
-          cursor: laster ? 'not-allowed' : 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '10px',
-          transition: 'all 0.15s',
-        }}
-      >
-        {laster ? (
-          <Loader size={20} color="#4a7c59" />
-        ) : (
-          <Camera size={20} color="#4a7c59" />
-        )}
-        <span style={{ fontFamily: 'Manrope, sans-serif', fontSize: '15px', fontWeight: 700, color: '#154212' }}>
-          {laster ? 'Analyserer bilde...' : 'Scan plante med kamera'}
-        </span>
-      </button>
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <button
+          onClick={() => kameraRef.current?.click()}
+          disabled={laster}
+          style={{
+            flex: 1,
+            padding: '14px',
+            borderRadius: '16px',
+            border: '2px dashed #d4e8d0',
+            backgroundColor: '#f7fbf7',
+            cursor: laster ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            transition: 'all 0.15s',
+          }}
+        >
+          {laster ? <Loader size={18} color="#4a7c59" /> : <Camera size={18} color="#4a7c59" />}
+          <span style={{ fontFamily: 'Manrope, sans-serif', fontSize: '13px', fontWeight: 700, color: '#154212' }}>
+            {laster ? 'Analyserer...' : 'Kamera'}
+          </span>
+        </button>
+        <button
+          onClick={() => galleriRef.current?.click()}
+          disabled={laster}
+          style={{
+            flex: 1,
+            padding: '14px',
+            borderRadius: '16px',
+            border: '2px dashed #d4e8d0',
+            backgroundColor: '#f7fbf7',
+            cursor: laster ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            transition: 'all 0.15s',
+          }}
+        >
+          <span style={{ fontSize: '16px' }}>🖼️</span>
+          <span style={{ fontFamily: 'Manrope, sans-serif', fontSize: '13px', fontWeight: 700, color: '#154212' }}>
+            Galleri
+          </span>
+        </button>
+      </div>
 
       {feil && (
         <div style={{ marginTop: '10px', padding: '12px', borderRadius: '12px', backgroundColor: '#fdf0ef', display: 'flex', alignItems: 'center', gap: '8px' }}>
