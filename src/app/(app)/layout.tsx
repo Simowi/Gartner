@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import Onboarding from '@/components/Onboarding'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Home, Leaf, Plus, CalendarDays, Camera } from 'lucide-react'
+import { Home, Leaf, CalendarDays, Camera, Plus, ScanLine, Stethoscope } from 'lucide-react'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [visOnboarding, setVisOnboarding] = useState(false)
@@ -37,10 +37,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       const dy = e.changedTouches[0].clientY - sveipStartY.current
       if (Math.abs(dy) > Math.abs(dx)) return
       if (Math.abs(dx) < 50) return
-
       const idx = faner.indexOf(pathname)
       if (idx === -1) return
-
       if (dx < 0 && idx < faner.length - 1) {
         router.push(faner[idx + 1])
       } else if (dx > 0 && idx > 0) {
@@ -103,18 +101,56 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             )
           })}
 
+          {/* Kamera-knapp */}
           <div style={{ position: 'relative' }}>
             {visMeny && (
               <>
                 <div onClick={() => setVisMeny(false)} style={{ position: 'fixed', inset: 0, zIndex: 49 }} />
-                <div style={{ position: 'absolute', bottom: '60px', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'white', borderRadius: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', padding: '8px', display: 'flex', flexDirection: 'column', gap: '4px', zIndex: 51, minWidth: '160px' }}>
-                  <Link href="/planter/ny" onClick={() => setVisMeny(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderRadius: '10px', textDecoration: 'none', backgroundColor: '#f0ece3' }}>
-                    <Plus size={18} color="#154212" />
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#1c1c18' }}>Legg til plante</span>
+                <div style={{
+                  position: 'absolute', bottom: '64px', left: '50%', transform: 'translateX(-50%)',
+                  backgroundColor: '#fdfaf3', borderRadius: '20px',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(196,192,183,0.3)',
+                  padding: '8px', display: 'flex', flexDirection: 'column', gap: '4px',
+                  zIndex: 51, minWidth: '200px'
+                }}>
+                  <Link href="/planter/skann" onClick={() => setVisMeny(false)} style={{
+                    display: 'flex', alignItems: 'center', gap: '12px',
+                    padding: '12px 16px', borderRadius: '14px',
+                    textDecoration: 'none', backgroundColor: '#f0ece3'
+                  }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#154212', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Stethoscope size={18} color="white" />
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '14px', fontWeight: 700, color: '#1c1c18', margin: 0 }}>Diagnoser plante</p>
+                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#4a4a42', margin: 0 }}>AI sjekker helsa</p>
+                    </div>
                   </Link>
-                  <Link href="/planter/skann" onClick={() => setVisMeny(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderRadius: '10px', textDecoration: 'none', backgroundColor: '#f0ece3' }}>
-                    <Camera size={18} color="#154212" />
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#1c1c18' }}>Skann plante</span>
+                  <Link href="/planter/ny?skann=true" onClick={() => setVisMeny(false)} style={{
+                    display: 'flex', alignItems: 'center', gap: '12px',
+                    padding: '12px 16px', borderRadius: '14px',
+                    textDecoration: 'none', backgroundColor: '#f0ece3'
+                  }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#4a7c59', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <ScanLine size={18} color="white" />
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '14px', fontWeight: 700, color: '#1c1c18', margin: 0 }}>Skann ny plante</p>
+                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#4a4a42', margin: 0 }}>Identifiser med AI</p>
+                    </div>
+                  </Link>
+                  <Link href="/planter/ny" onClick={() => setVisMeny(false)} style={{
+                    display: 'flex', alignItems: 'center', gap: '12px',
+                    padding: '12px 16px', borderRadius: '14px',
+                    textDecoration: 'none', backgroundColor: '#f0ece3'
+                  }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#c4c0b7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Plus size={18} color="white" />
+                    </div>
+                    <div>
+                      <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '14px', fontWeight: 700, color: '#1c1c18', margin: 0 }}>Legg til manuelt</p>
+                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#4a4a42', margin: 0 }}>Uten skanning</p>
+                    </div>
                   </Link>
                 </div>
               </>
@@ -123,8 +159,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               onClick={() => setVisMeny(v => !v)}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             >
-              <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#154212', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(21,66,18,0.3)' }}>
-                <Plus size={22} color="white" strokeWidth={2.2} />
+              <div style={{
+                width: '44px', height: '44px', borderRadius: '50%',
+                backgroundColor: visMeny ? '#0d2b0b' : '#154212',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(21,66,18,0.3)',
+                transition: 'background-color 0.2s ease',
+              }}>
+                <Camera size={22} color="white" strokeWidth={2} />
               </div>
             </button>
           </div>
