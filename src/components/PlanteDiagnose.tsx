@@ -65,6 +65,24 @@ function lagAnbefaling(sykdommer: Sykdom[], erSun: boolean): string {
   return 'Følg med på planten de neste dagene og se om tilstanden endrer seg.'
 }
 
+async function komprimer(fil: File, maksBredd = 1200): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image()
+    const url = URL.createObjectURL(fil)
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      const ratio = Math.min(1, maksBredd / img.width)
+      canvas.width = img.width * ratio
+      canvas.height = img.height * ratio
+      const ctx = canvas.getContext('2d')!
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+      URL.revokeObjectURL(url)
+      resolve(canvas.toDataURL('image/jpeg', 0.82).split(',')[1])
+    }
+    img.src = url
+  })
+}
+
 export default function PlanteDiagnose({ planteId, planteNavn }: { planteId: string, planteNavn: string }) {
   const [laster, setLaster] = useState(false)
   const [resultat, setResultat] = useState<DiagnoseResultat | null>(null)
@@ -76,9 +94,8 @@ export default function PlanteDiagnose({ planteId, planteNavn }: { planteId: str
     if (!fil) return
     setLaster(true)
     setResultat(null)
-    const leser = new FileReader()
-    leser.onload = async (ev) => {
-      const base64 = (ev.target?.result as string)?.split(',')[1]
+    try {
+      const base64 = await komprimer(fil)
       if (!base64) { setLaster(false); return }
       try {
         const res = await fetch('/api/plantid', {
@@ -111,8 +128,10 @@ export default function PlanteDiagnose({ planteId, planteNavn }: { planteId: str
         console.error(e)
       }
       setLaster(false)
+    } catch (err) {
+      console.error(err)
+      setLaster(false)
     }
-    leser.readAsDataURL(fil)
   }
 
   return (
