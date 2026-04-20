@@ -272,35 +272,35 @@ export default function HjemPage() {
 
   return (
     <div style={{ paddingTop: '52px', paddingBottom: '32px' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '32px' }}>
-        <div>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', color: '#4a7c59', marginBottom: '6px', textTransform: 'uppercase' }}>
+      <div style={{ marginBottom: '32px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', color: '#4a7c59', textTransform: 'uppercase' }}>
             {hilsen}
           </p>
-          <h1 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '42px', fontWeight: 800, color: '#1c1c18', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
-            {tittel}
-          </h1>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button
+              onClick={() => router.push('/varsler')}
+              style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', backgroundColor: '#f0ece3', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+            >
+              <Bell size={18} color="#4a4a42" />
+            </button>
+            <button
+              onClick={() => router.push('/profil')}
+              style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', backgroundColor: '#d4e8d0', cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+            >
+              {profilBilde ? (
+                <img src={profilBilde} alt="Profil" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <span style={{ fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 700, color: '#154212' }}>
+                  {profilInitial}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
-        <button
-          onClick={() => router.push('/varsler')}
-          style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', backgroundColor: '#f0ece3', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-        >
-          <Bell size={18} color="#4a4a42" />
-        </button>
-        <button
-          onClick={() => router.push('/profil')}
-          style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', backgroundColor: '#d4e8d0', cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-        >
-          {profilBilde ? (
-            <img src={profilBilde} alt="Profil" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : (
-            <span style={{ fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 700, color: '#154212' }}>
-              {profilInitial}
-            </span>
-          )}
-        </button>
-        </div>
+        <h1 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '42px', fontWeight: 800, color: '#1c1c18', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+          {tittel}
+        </h1>
       </div>
 
       <PushVarsler />
