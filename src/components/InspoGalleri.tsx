@@ -74,20 +74,6 @@ export default function InspoGalleri() {
     return () => observer.disconnect()
   }, [bilder, lasterMer, nåddMaks])
 
-  useEffect(() => {
-    if (!lastKnappRef.current || nåddMaks) return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !lasterMer && !nåddMaks) {
-          hentFlereBilder()
-        }
-      },
-      { threshold: 0.1 }
-    )
-    observer.observe(lastKnappRef.current)
-    return () => observer.disconnect()
-  }, [bilder, lasterMer, nåddMaks])
-
   async function registrerNedlasting(bilde: Bilde) {
     try {
       await fetch(`/api/inspo/download?url=${encodeURIComponent(bilde.downloadUrl)}`)
