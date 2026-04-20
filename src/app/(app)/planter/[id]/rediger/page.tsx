@@ -105,7 +105,7 @@ export default function RedigerPlante() {
 
   const inputStil = { width: '100%', padding: '14px 16px', borderRadius: '14px', border: 'none', backgroundColor: '#f0ece3', fontFamily: 'Inter, sans-serif', fontSize: '15px', color: '#1c1c18', outline: 'none' }
   const labelStil = { fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: '#4a4a42', display: 'block', marginBottom: '6px' }
-  const plasseringer = ['Stue', 'Spisestue', 'Kjøkken', 'Kontor', 'Toalett', 'Balkong', 'Vaskerom', 'Hage', 'Soverom oppe', 'Soverom nede', 'Kjellerstue', 'Kjellerbad', 'Musikkrom', 'Bod']
+  const plasseringer = ['Stue', 'Spisestue', 'Kjøkken', 'Kontor', 'Toalett', 'Gangen', 'Balkong', 'Vaskerom', 'Hage', 'Soverom oppe', 'Soverom nede', 'Kjellerstue', 'Kjellerbad', 'Musikkrom', 'Bod']
   const vanningsvalg = [
     { label: 'Hver dag', verdi: '1' },
     { label: 'Annenhver dag', verdi: '2' },
