@@ -19,6 +19,8 @@ interface Plante {
   navn: string
   art: string
   neste_vanning: string
+  neste_gjødsling: string
+  gjodsel_intervall_dager: number
   bilde_url: string
   vanning_intervall_dager: number
 }
@@ -150,6 +152,7 @@ export default function HjemPage() {
   const [mounted, setMounted] = useState(false)
   const [visPlanteTips, setVisPlanteTips] = useState(false)
   const [vannetPlanter, setVannetPlanter] = useState<Set<string>>(new Set())
+  const [gjødsletPlanter, setGjødsletPlanter] = useState<Set<string>>(new Set())
   const [fjernPlanter, setFjernPlanter] = useState<Set<string>>(new Set())
   const [minneskrinRefresh, setMinnesskrinRefresh] = useState(0)
 
@@ -228,6 +231,19 @@ export default function HjemPage() {
     setTimeout(() => {
       setFjernPlanter(prev => new Set([...prev, planteId]))
     }, 1000)
+  }
+
+  async function gjødslePlante(e: React.MouseEvent, planteId: string, intervall: number) {
+    e.preventDefault()
+    e.stopPropagation()
+    const na = new Date()
+    const nestGjødsling = new Date()
+    nestGjødsling.setDate(nestGjødsling.getDate() + (intervall || 30))
+    await supabase.from('planter').update({
+      sist_gjødslet: na.toISOString(),
+      neste_gjødsling: nestGjødsling.toISOString(),
+    }).eq('id', planteId)
+    setGjødsletPlanter(prev => new Set([...prev, planteId]))
   }
 
   const dagTilVanning = (dato: string) => {
@@ -376,6 +392,75 @@ export default function HjemPage() {
             </button>
           </div>
         )}
+
+        {(() => {
+          const måned = new Date().getMonth()
+          const erVekstsesong = måned >= 3 && måned <= 8
+          if (!erVekstsesong) return null
+          const trengerGjødsling = planter.filter(p =>
+            p.neste_gjødsling &&
+            !gjødsletPlanter.has(p.id) &&
+            new Date(p.neste_gjødsling).getTime() - Date.now() < 7 * 86400000
+          )
+          if (trengerGjødsling.length === 0) return null
+          return (
+            <div style={{ marginTop: '32px' }}>
+              <h2 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '22px', fontWeight: 700, color: '#1c1c18', marginBottom: '16px', letterSpacing: '-0.01em' }}>
+                Trenger gjødsling snart 🌱
+              </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {trengerGjødsling.map(plante => (
+                  <div key={plante.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '16px', padding: '16px', backgroundColor: '#f0ece3', cursor: 'pointer' }} onClick={() => router.push('/planter/' + plante.id)}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                      <div style={{ width: '48px', height: '48px', borderRadius: '14px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
+                        {plante.bilde_url ? (
+                          <img src={plante.bilde_url + '?width=120&height=120&resize=cover'} alt={plante.navn} width={48} height={48} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                        ) : (
+                          <Leaf size={20} color="#154212" />
+                        )}
+                      </div>
+                      <div>
+                        <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '15px', fontWeight: 600, color: '#1c1c18' }}>{plante.navn}</p>
+                        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#4a4a42' }}>{plante.art || 'Ukjent art'}</p>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {gjødsletPlanter.has(plante.id) ? (
+                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#4a7c59' }}>Gjødslet 🌱</span>
+                      ) : (
+                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#4a7c59' }}>
+                          {(() => {
+                            const diff = Math.ceil((new Date(plante.neste_gjødsling).getTime() - Date.now()) / 86400000)
+                            if (diff < 0) return 'Gjødsle nå!'
+                            if (diff === 0) return 'Gjødsle i dag'
+                            if (diff === 1) return 'I morgen'
+                            return 'Om ' + diff + ' dager'
+                          })()}
+                        </span>
+                      )}
+                      <button
+                        onClick={(e) => gjødslePlante(e, plante.id, plante.gjodsel_intervall_dager)}
+                        disabled={gjødsletPlanter.has(plante.id)}
+                        style={{
+                          width: '32px', height: '32px', borderRadius: '50%', border: 'none',
+                          backgroundColor: gjødsletPlanter.has(plante.id) ? '#154212' : '#d4e8d0',
+                          cursor: gjødsletPlanter.has(plante.id) ? 'default' : 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          flexShrink: 0, transition: 'all 0.3s ease',
+                        }}
+                      >
+                        {gjødsletPlanter.has(plante.id)
+                          ? <span style={{ fontSize: '14px', color: 'white', fontWeight: 700 }}>✓</span>
+                          : <span style={{ fontSize: '16px' }}>🌱</span>
+                        }
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        })()}
 
         {dagensKort && (
         <div style={{ borderRadius: '20px', padding: '20px', marginBottom: '32px', marginTop: '24px', background: 'linear-gradient(135deg, #154212 0%, #2d5a27 100%)' }}>
