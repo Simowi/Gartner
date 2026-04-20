@@ -24,6 +24,7 @@ export default function PlanteProfil() {
   const [plante, setPlante] = useState<Plante | null>(null)
   const [laster, setLaster] = useState(true)
   const [vannerNå, setVannerNå] = useState(false)
+  const [gjødslerNå, setGjødslerNå] = useState(false)
   const [sletterNå, setSletterNå] = useState(false)
   const [bekreftSlett, setBekreftSlett] = useState(false)
   const [toast, setToast] = useState('')
@@ -99,6 +100,23 @@ export default function PlanteProfil() {
   const formaterDato = (dato: string) => {
     if (!dato) return '–'
     return new Date(dato).toLocaleDateString('nb-NO', { day: 'numeric', month: 'long', year: 'numeric' })
+  }
+
+  async function registrerGjødsling() {
+    if (!plante) return
+    setGjødslerNå(true)
+    const na = new Date()
+    const nestGjødsling = new Date()
+    const intervall = (plante as any).gjodsel_intervall_dager || 30
+    nestGjødsling.setDate(nestGjødsling.getDate() + intervall)
+    const { error } = await supabase.from('planter').update({
+      sist_gjødslet: na.toISOString(),
+      neste_gjødsling: nestGjødsling.toISOString(),
+    }).eq('id', plante.id)
+    if (!error) {
+      visToast('Gjødsling registrert! 🌱')
+    }
+    setGjødslerNå(false)
   }
 
   const dagTilVanning = (dato: string) => {
@@ -185,6 +203,10 @@ export default function PlanteProfil() {
         </button>
         <PlanteDiagnose planteId={plante.id} planteNavn={plante.navn} />
       </div>
+      <button onClick={registrerGjødsling} disabled={gjødslerNå} style={{ width: '100%', padding: '14px', borderRadius: '16px', border: 'none', backgroundColor: '#d4e8d0', color: '#154212', fontFamily: 'Manrope, sans-serif', fontSize: '15px', fontWeight: 700, cursor: gjødslerNå ? 'not-allowed' : 'pointer', opacity: gjødslerNå ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '24px' }}>
+        <span style={{ fontSize: '16px' }}>🌱</span>
+        {gjødslerNå ? 'Registrerer...' : 'Gjødsle nå'}
+      </button>
 
       {/* Info-kort */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
