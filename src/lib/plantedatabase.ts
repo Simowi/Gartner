@@ -5715,4 +5715,10 @@ export function søkPlanteArt(søkeord: string): (PlanteArt & { matchetAlias?: s
   })
 }
 
-export const planteArtDatabase: PlanteArt[] = planteArtDatabaseRaw.filter((p): p is PlanteArt => p !== undefined)
+let _cachetDatabase: PlanteArt[] | null = null
+export const planteArtDatabase: PlanteArt[] = (() => {
+  if (!_cachetDatabase) {
+    _cachetDatabase = planteArtDatabaseRaw.filter((p): p is PlanteArt => p !== undefined)
+  }
+  return _cachetDatabase
+})()

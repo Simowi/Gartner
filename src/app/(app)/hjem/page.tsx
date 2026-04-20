@@ -326,7 +326,7 @@ export default function HjemPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '14px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
                     {plante.bilde_url ? (
-                      <img src={plante.bilde_url + '?width=120&height=120&resize=cover'} alt={plante.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                      <img src={plante.bilde_url + '?width=120&height=120&resize=cover'} alt={plante.navn} width={48} height={48} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
                     ) : (
                       <Leaf size={20} color="#154212" />
                     )}

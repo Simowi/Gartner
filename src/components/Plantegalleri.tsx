@@ -40,7 +40,7 @@ export default function Plantegalleri() {
           <a key={plante.id} href={'/planter/' + plante.id} style={{ flexShrink: 0, textDecoration: 'none', display: 'block', width: '110px' }}>
             <div style={{ width: '110px', height: '140px', borderRadius: '16px', overflow: 'hidden', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', marginBottom: '6px' }}>
               {plante.bilde_url ? (
-                <img src={plante.bilde_url + '?width=220&height=280&resize=cover'} alt={plante.navn} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                <img src={plante.bilde_url + '?width=220&height=280&resize=cover'} alt={plante.navn} width={110} height={140} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
               ) : (
                 <Leaf size={32} color="#154212" />
               )}

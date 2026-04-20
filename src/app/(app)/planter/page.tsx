@@ -70,7 +70,7 @@ function PlanteKort({ plante, vannet, onVann, onSlett }: {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
               {plante.bilde_url ? (
-                <img src={plante.bilde_url + '?width=88&height=88&resize=cover'} alt={plante.navn} style={{ width: '44px', height: '44px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0 }} loading="lazy" />
+                <img src={plante.bilde_url + '?width=88&height=88&resize=cover'} alt={plante.navn} width={44} height={44} style={{ width: '44px', height: '44px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0 }} loading="lazy" />
               ) : (
                 <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: '#d4e8d0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Droplets size={20} color="#4a7c59" />

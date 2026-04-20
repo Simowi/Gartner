@@ -6,20 +6,21 @@ export async function GET() {
 
   try {
     const søkeord = [
-    'scandinavian interior plants',
-    'japandi interior plants',
-    'mid century modern houseplants',
-    'minimal interior botanical',
-    'nordic home plants styling',
-    'japandi living room plants',
-    'indoor plants aesthetic interior',
-    'mid century modern indoor garden',
-  ]
-    const tilfeldig = søkeord[Math.floor(Math.random() * søkeord.length)]
+      'scandinavian interior plants',
+      'japandi interior plants',
+      'mid century modern houseplants',
+      'minimal interior botanical',
+      'nordic home plants styling',
+      'japandi living room plants',
+      'indoor plants aesthetic interior',
+      'mid century modern indoor garden',
+    ]
+    const dagIndex = new Date().getDate() % søkeord.length
+    const valgt = søkeord[dagIndex]
 
     const res = await fetch(
-      `https://api.unsplash.com/photos/random?query=${encodeURIComponent(tilfeldig)}&orientation=landscape&count=6`,
-      { headers: { Authorization: `Client-ID ${nøkkel}` }, next: { revalidate: 3600 } }
+      `https://api.unsplash.com/photos/random?query=${encodeURIComponent(valgt)}&orientation=landscape&count=6`,
+      { headers: { Authorization: `Client-ID ${nøkkel}` }, next: { revalidate: 86400 } }
     )
     const data = await res.json()
     if (!Array.isArray(data)) return NextResponse.json({ bilder: [] })
@@ -34,7 +35,11 @@ export async function GET() {
       downloadUrl: b.links.download_location,
     }))
 
-    return NextResponse.json({ bilder })
+    return NextResponse.json({ bilder }, {
+      headers: {
+        'Cache-Control': 's-maxage=86400, stale-while-revalidate=172800',
+      }
+    })
   } catch (e) {
     return NextResponse.json({ feil: 'Kunne ikke hente bilder' }, { status: 500 })
   }

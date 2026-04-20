@@ -46,7 +46,11 @@ export async function GET() {
         kode: v.kode,
       }))
 
-    return NextResponse.json({ dager })
+    return NextResponse.json({ dager }, {
+      headers: {
+        'Cache-Control': 's-maxage=3600, stale-while-revalidate=7200',
+      }
+    })
   } catch (e) {
     console.error('Vær-feil:', e)
     return NextResponse.json({ feil: 'Kunne ikke hente vær' }, { status: 500 })
