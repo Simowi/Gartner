@@ -210,7 +210,7 @@ export default function PlanterPage() {
     </div>
   )
 
-  const romRekkefølge = ['Hagen', 'Terrassen', 'Stuen', 'Kjøkkenet', 'Soverommet', 'Soverom oppe',
+  const romRekkefølge = ['Hagen', 'Terrassen', 'Stuen', 'Spisestuen', 'Kjøkkenet', 'Soverommet', 'Soverom oppe',
     'Soverom nede', 'Kontoret', 'Toalettet', 'Gangen', 'Gangen oppe', 'Yttergangen',
     'Vaskerommet', 'Trappen foran huset', 'Kjellerstuen', 'Kjellerbadet',
     'Musikkrommet', 'Boden', 'Uten plassering']
