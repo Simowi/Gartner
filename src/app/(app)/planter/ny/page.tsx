@@ -116,7 +116,7 @@ export default function NyPlantePage() {
     color: '#4a4a42', display: 'block', marginBottom: '6px',
   }
 
-  const plasseringer = ['Stue', 'Spisestue', 'Kjøkken', 'Kontor', 'Toalett', 'Balkong', 'Hage', 'Soverom oppe', 'Soverom nede', 'Kjellerstue', 'Kjellerbad', 'Musikkrom', 'Bod']
+  const plasseringer = ['Stue', 'Spisestue', 'Kjøkken', 'Kontor', 'Toalett', 'Balkong', 'Vaskerom', 'Hage', 'Soverom oppe', 'Soverom nede', 'Kjellerstue', 'Kjellerbad', 'Musikkrom', 'Bod']
   const vanningsvalg = [
     { label: 'Hver dag', verdi: '1' },
     { label: 'Annenhver dag', verdi: '2' },
