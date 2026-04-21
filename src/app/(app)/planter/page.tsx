@@ -210,10 +210,8 @@ export default function PlanterPage() {
     </div>
   )
 
-  const romRekkefølge = ['Hagen', 'Terrassen', 'Stuen', 'Spisestuen', 'Kjøkkenet', 'Gangen', 'Vaskerommet', 'Soverommet', 'Soverom oppe',
-    'Soverom nede', 'Kontoret', 'Toalettet', 'Gangen', 'Gangen oppe', 'Yttergangen',
-    'Vaskerommet', 'Trappen foran huset', 'Kjellerstuen', 'Kjellerbadet',
-    'Musikkrommet', 'Boden', 'Uten plassering']
+  const romRekkefølge = ['Hage', 'Terrasse', 'Stue', 'Spisestue', 'Kjøkken', 'Gangen', 'Kontor', 'Toalett', 'Balkong', 'Vaskerom',
+    'Soverom oppe', 'Soverom nede', 'Kjellerstue', 'Kjellerbad', 'Musikkrom', 'Bod', 'Uten plassering']
 
   const grupperPerRom = (planter: Plante[]) => {
     const grupper: Record<string, Plante[]> = {}

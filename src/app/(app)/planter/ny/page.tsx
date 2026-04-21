@@ -96,8 +96,34 @@ export default function NyPlantePage() {
         art_id: valgtArt?.id || null,
         bilde_url: bildeUrl || null,
       })
-      if (error) { setFeil('Feil: ' + error.message); setLaster(false) }
-      else { router.push('/planter'); router.refresh() }
+      if (error) { setFeil('Feil: ' + error.message); setLaster(false); return }
+
+      // Hent gjødslingsintervall fra Gemini i bakgrunnen
+      const latinskNavn = valgtArt ? valgtArt.latinskNavn : artSøk.trim()
+      if (latinskNavn) {
+        try {
+          const gjødselRes = await fetch('/api/gjodsel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ latinskNavn })
+          })
+          const gjødselData = await gjødselRes.json()
+          const gjødselIntervall = gjødselData.dager || 30
+          const måned = new Date().getMonth()
+          const erVekstsesong = måned >= 3 && måned <= 8
+          if (erVekstsesong) {
+            const nestGjødsling = new Date()
+            nestGjødsling.setDate(nestGjødsling.getDate() + gjødselIntervall)
+            await supabase.from('planter')
+              .update({ gjodsel_intervall_dager: gjødselIntervall, neste_gjødsling: nestGjødsling.toISOString() })
+              .eq('bruker_id', '4f386062-795a-4853-a34c-2f9023fd83f6')
+              .eq('navn', navn.trim())
+              .order('opprettet_at', { ascending: false })
+              .limit(1)
+          }
+        } catch (e) { console.error('Gjødsel-feil:', e) }
+      }
+      router.push('/planter'); router.refresh()
     } catch (e) {
       setFeil('En uventet feil oppstod.')
       setLaster(false)

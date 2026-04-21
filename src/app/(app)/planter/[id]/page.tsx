@@ -13,8 +13,11 @@ interface Plante {
   art: string
   plassering: string
   vanning_intervall_dager: number
+  gjodsel_intervall_dager: number
   sist_vannet: string
   neste_vanning: string
+  sist_gjødslet: string
+  neste_gjødsling: string
   notater: string
   bilde_url: string
   opprettet_at: string
@@ -107,7 +110,7 @@ export default function PlanteProfil() {
     setGjødslerNå(true)
     const na = new Date()
     const nestGjødsling = new Date()
-    const intervall = (plante as any).gjodsel_intervall_dager || 30
+    const intervall = plante.gjodsel_intervall_dager || 30
     nestGjødsling.setDate(nestGjødsling.getDate() + intervall)
     const { error } = await supabase.from('planter').update({
       sist_gjødslet: na.toISOString(),
